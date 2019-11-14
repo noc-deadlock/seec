@@ -151,7 +151,10 @@ NetworkInterface::incrementStats(flit *t_flit)
     Cycles network_delay =
         t_flit->get_dequeue_time() - t_flit->get_enqueue_time() - Cycles(1);
     Cycles src_queueing_delay = t_flit->get_src_delay();
-    Cycles dest_queueing_delay = (curCycle() - t_flit->get_dequeue_time());
+    // Cycles dest_queueing_delay = (curCycle() - t_flit->get_dequeue_time());
+    // cout << "dest_queueing delay: " << t_flit->get_dequeue_time() << endl;
+    Cycles dest_queueing_delay = Cycles(0);
+    assert(dest_queueing_delay == 0);
     Cycles queueing_delay = src_queueing_delay + dest_queueing_delay;
 
     m_net_ptr->increment_flit_network_latency(network_delay, vnet);
