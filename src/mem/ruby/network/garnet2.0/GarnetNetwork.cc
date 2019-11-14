@@ -96,6 +96,15 @@ GarnetNetwork::GarnetNetwork(const Params *p)
         m_nis.push_back(ni);
         ni->init_net_ptr(this);
     }
+
+    // Variables related to SEEC
+    m_seec = p->seec;
+    m_one_pkt_bufferless = p->one_pkt_bufferless;
+    m_inj_single_vnet = p->inj_single_vnet;
+    cout << "SEEC enabled:  m_seec: " << m_seec << endl;
+    cout << "m_one_pkt_bufferless: " << m_one_pkt_bufferless << endl;
+    cout << "m_inj_single_vnet: " << m_inj_single_vnet << endl;
+    // assert(0);
 }
 
 void

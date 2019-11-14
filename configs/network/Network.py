@@ -76,6 +76,15 @@ def define_options(parser):
     parser.add_option("--garnet-deadlock-threshold", action="store",
                       type="int", default=50000,
                       help="network-level deadlock threshold.")
+    parser.add_option("--seec", action="store",
+                    type="int", default=0,
+                    help="to enable Schocastic Escape Express Channel.")
+    parser.add_option("--one-pkt-bufferless", action="store",
+                        type="int", default=0,
+                        help="ejects one packet from each router bufferless-ly in a TDM manner")
+    parser.add_option("--inj-single-vnet", action="store",
+                        type="int", default=0,
+                        help="if set one then inject all types of packets in the single vnet")
 
 
 def create_network(options, ruby):
@@ -110,6 +119,10 @@ def init_network(options, network, InterfaceClass):
         network.ni_flit_size = options.link_width_bits / 8
         network.routing_algorithm = options.routing_algorithm
         network.garnet_deadlock_threshold = options.garnet_deadlock_threshold
+        network.seec = options.seec
+        network.one_pkt_bufferless = options.one_pkt_bufferless
+        network.inj_single_vnet = options.inj_single_vnet
+
 
     if options.network == "simple":
         network.setup_buffers()

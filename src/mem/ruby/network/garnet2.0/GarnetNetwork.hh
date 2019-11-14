@@ -143,6 +143,11 @@ class GarnetNetwork : public Network
         m_total_hops += hops;
     }
 
+
+   uint32_t m_seec;
+   uint32_t m_one_pkt_bufferless;
+   uint32_t m_inj_single_vnet;
+
   protected:
     // Configuration
     int m_num_rows;

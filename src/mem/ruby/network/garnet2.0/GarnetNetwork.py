@@ -48,6 +48,10 @@ class GarnetNetwork(RubyNetwork):
     fault_model = Param.FaultModel(NULL, "network fault model");
     garnet_deadlock_threshold = Param.UInt32(50000,
                               "network-level deadlock threshold")
+    seec = Param.UInt32(Parent.seec, "To enable Schocastic Escape Express Channel")
+    one_pkt_bufferless = Param.UInt32(Parent.one_pkt_bufferless, "make one packet bufferless")
+    inj_single_vnet = Param.UInt32(Parent.inj_single_vnet,
+                        "if set inject all packets in the single VNet")
 
 class GarnetNetworkInterface(ClockedObject):
     type = 'GarnetNetworkInterface'
