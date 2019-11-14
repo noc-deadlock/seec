@@ -148,6 +148,11 @@ class GarnetNetwork : public Network
    uint32_t m_one_pkt_bufferless;
    uint32_t m_inj_single_vnet;
 
+   // SEEC related Stats:
+   Stats::Scalar m_bufferless_pkts;
+
+   std::vector<NetworkInterface *> m_nis;   // All NI's in Network
+
   protected:
     // Configuration
     int m_num_rows;
@@ -199,7 +204,6 @@ class GarnetNetwork : public Network
     std::vector<Router *> m_routers;   // All Routers in Network
     std::vector<NetworkLink *> m_networklinks; // All flit links in the network
     std::vector<CreditLink *> m_creditlinks; // All credit links in the network
-    std::vector<NetworkInterface *> m_nis;   // All NI's in Network
 };
 
 inline std::ostream&

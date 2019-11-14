@@ -72,6 +72,8 @@ NetworkInterface::NetworkInterface(const Params *p)
     }
 
     m_stall_count.resize(m_virtual_networks);
+
+    m_bufferless_pkt = new flitBuffer();
 }
 
 void
@@ -270,6 +272,60 @@ NetworkInterface::wakeup()
     }
 }
 
+
+void
+NetworkInterface::consume_bufferless_pkt(int latency) {
+
+    assert((m_net_ptr->m_seec == 1) &&
+        (m_net_ptr->m_one_pkt_bufferless == 1));
+
+    Tick curTime = clockEdge();
+
+    // Check if there are flits stalling a virtual channel. Track if a
+    // message is enqueued to restrict ejection to one message per cycle.
+    bool messageEnqueuedThisCycle = checkStallQueue();
+
+    // remove flit
+    flit *t_flit = m_bufferless_pkt->getTopFlit();
+    assert(m_bufferless_pkt->isEmpty() == true);
+    int vnet = t_flit->get_vnet();
+    t_flit->set_dequeue_time(curCycle() + Cycles(latency));
+
+    // If a tail flit is received, enqueue into the protocol buffers if
+    // space is available. Otherwise, exchange non-tail flits for credits.
+    if (t_flit->get_type() == TAIL_ || t_flit->get_type() == HEAD_TAIL_) {
+        if (!messageEnqueuedThisCycle &&
+            outNode_ptr[vnet]->areNSlotsAvailable(1, curTime)) {
+            // Space is available. Enqueue to protocol buffer.
+            outNode_ptr[vnet]->enqueue(t_flit->get_msg_ptr(), curTime,
+                                       cyclesToTicks(Cycles(1)));
+
+            // Simply send a credit back since we are not buffering
+            // this flit in the NI
+            // sendCredit(t_flit, true);
+
+            // Update stats and delete flit pointer
+            incrementStats(t_flit);
+            m_net_ptr->m_bufferless_pkts++;
+            delete t_flit;
+        } else {
+               assert(0); // should not come here
+        }
+    } else {
+
+        assert(0);  // should not come here as well
+        // Non-tail flit. Send back a credit but not VC free signal.
+        sendCredit(t_flit, false);
+
+        // Update stats and delete flit pointer.
+        incrementStats(t_flit);
+        delete t_flit;
+    }
+
+
+}
+
+
 void
 NetworkInterface::sendCredit(flit *t_flit, bool is_free)
 {
@@ -341,7 +397,14 @@ NetworkInterface::flitisizeMessage(MsgPtr msg_ptr, int vnet)
     for (int ctr = 0; ctr < dest_nodes.size(); ctr++) {
 
         // this will return a free output virtual channel
-        int vc = calculateVC(vnet);
+        int vc;
+        if (m_net_ptr->m_inj_single_vnet == 1) {
+            vc = calculateVC(0 /*vnet*/);
+        } else {
+            assert(m_net_ptr->m_inj_single_vnet == 0);
+            vc = calculateVC(vnet);
+        }
+
 
         if (vc == -1) {
             return false ;

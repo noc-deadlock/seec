@@ -272,6 +272,12 @@ GarnetNetwork::regStats()
         .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
         ;
 
+
+    m_bufferless_pkts
+        .name(name() + ".total_bufferless_packets")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
     m_packets_injected
         .init(m_virtual_networks)
         .name(name() + ".packets_injected")

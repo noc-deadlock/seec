@@ -116,10 +116,17 @@ class Router : public BasicRouter, public Consumer
 
     uint32_t functionalWrite(Packet *);
 
+
+   bool made_one_pkt_bufferless; // to track if one packet
+                                // is ejected from the network
+
+   GarnetNetwork *m_network_ptr;
+
+   uint32_t m_bufferless_vnet_ptr;
+
   private:
     Cycles m_latency;
     int m_virtual_networks, m_num_vcs, m_vc_per_vnet;
-    GarnetNetwork *m_network_ptr;
 
     std::vector<InputUnit *> m_input_unit;
     std::vector<OutputUnit *> m_output_unit;

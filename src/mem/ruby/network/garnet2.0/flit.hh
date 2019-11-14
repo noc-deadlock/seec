@@ -99,7 +99,7 @@ class flit
 
     bool functionalWrite(Packet *pkt);
 
-  protected:
+  public:
     int m_id;
     int m_vnet;
     int m_vc;

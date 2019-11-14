@@ -73,6 +73,9 @@ class NetworkInterface : public ClockedObject, public Consumer
     void init_net_ptr(GarnetNetwork *net_ptr) { m_net_ptr = net_ptr; }
 
     uint32_t functionalWrite(Packet *);
+    void consume_bufferless_pkt(int latency);
+
+    flitBuffer *m_bufferless_pkt;
 
   private:
     GarnetNetwork *m_net_ptr;

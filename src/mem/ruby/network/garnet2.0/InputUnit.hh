@@ -52,6 +52,7 @@ class InputUnit : public Consumer
     ~InputUnit();
 
     void wakeup();
+    bool make_pkt_bufferless(int vnet);
     void print(std::ostream& out) const {};
 
     inline PortDirection get_direction() { return m_direction; }

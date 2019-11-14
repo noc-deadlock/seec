@@ -37,6 +37,8 @@
 #include "debug/RubyNetwork.hh"
 #include "mem/ruby/network/garnet2.0/Credit.hh"
 #include "mem/ruby/network/garnet2.0/Router.hh"
+#include "mem/ruby/network/garnet2.0/NetworkInterface.hh"
+
 
 using namespace std;
 using m5::stl_helpers::deletePointers;
@@ -138,6 +140,92 @@ InputUnit::wakeup()
         }
     }
 }
+
+
+// this function returns true when it transfers the pkt bufferless-ly
+bool
+InputUnit::make_pkt_bufferless(int vnet) {
+
+    // calcubate VC-base from the VNet
+    // look for the flit present in the base-VC of that VNet
+    int vc_base = vnet * m_vc_per_vnet;
+    flit *t_flit;
+    if (m_vcs[vc_base]->isEmpty()) {
+        return false;
+    } else {
+        // remove the flit because you are sure to
+        // eject and inject into the destination NI
+        t_flit = m_vcs[vc_base]->getTopFlit();
+    }
+
+    // SEEC code:
+    // Insert the flit here in the respective NI buffer for it
+    // to get consumed add updates the latency and hop apporpriately.
+    if (m_router->m_network_ptr->m_seec == 1 ) { // if 'SEEC' is set true
+        if (m_router->m_network_ptr->m_one_pkt_bufferless == 1) {
+            // check if it is the turn of this router:
+            if((m_router->curCycle() % (m_router->get_net_ptr()->getNumRouters()) == m_router->get_id())
+                && m_router->made_one_pkt_bufferless == false /*&&
+                m_direction != "Local"*/) {
+                DPRINTF(RubyNetwork, "inport direction for which we are ejecting packet: %s\n", m_direction);
+                cout << *t_flit << endl;
+                // int num_cols = m_router->get_net_ptr()->getNumCols();
+                int hop_traversed = -1;
+                int num_cols = m_router->get_net_ptr()->getNumCols();
+                int my_router_id = m_router->get_id();
+                int my_x = my_router_id % num_cols;
+                int my_y = my_router_id / num_cols;
+
+                int dest_router_id = t_flit->m_route.dest_router;
+                int dest_ni = t_flit->m_route.dest_ni;
+                int dest_x = dest_router_id % num_cols;
+                int dest_y = dest_router_id / num_cols;
+                assert(dest_ni != -1);
+
+                int x_hops = abs(dest_x - my_x);
+                int y_hops = abs(dest_y - my_y);
+
+                hop_traversed = x_hops + y_hops;
+
+                if (my_router_id == dest_router_id) {
+                    hop_traversed = 1;
+                }
+                t_flit->m_route.hops_traversed += hop_traversed;
+                // update the
+                int latency = 2*hop_traversed; // assume: 1-cycle link and 1-cycle router
+
+                // put the flit in the NI special buffer for it to be ejected using
+                // NI's consume_bufferless_pkt() API
+                m_router->m_network_ptr->m_nis[dest_ni]->\
+                            m_bufferless_pkt->insert(t_flit);
+
+                m_router->m_network_ptr->m_nis[dest_ni]->\
+                            consume_bufferless_pkt(latency);
+
+                m_router->made_one_pkt_bufferless = true;
+                // update the credits for upstream router here
+                // update the state of outVC at upstream router
+                increment_credit(vc_base, true, m_router->curCycle());
+                // after ejecting the packet from this VC make it IDLE
+                set_vc_idle(vc_base, m_router->curCycle());
+                // int vnet = vc/m_vc_per_vnet;
+                // number of writes same as reads
+                // any flit that is written will be read only once
+                // m_router->get_net_ptr()->m_num_bufferless[vnet]++;
+                // m_num_buffer_writes[vnet]++;
+                // m_num_buffer_reads[vnet]++;
+
+                // return true
+                // you have made the successful ejection of packet
+                return true;
+            }
+        }
+    }
+
+
+    return false;
+}
+
 
 // Send a credit back to upstream router for this VC.
 // Called by SwitchAllocator when the flit in this VC wins the Switch.

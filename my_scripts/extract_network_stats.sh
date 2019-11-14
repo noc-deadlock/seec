@@ -10,6 +10,7 @@ grep "average_flit_queueing_latency" m5out/stats.txt | sed 's/system.ruby.networ
 grep "average_flit_network_latency" m5out/stats.txt | sed 's/system.ruby.network.average_flit_network_latency\s*/average_flit_network_latency = /' >> network_stats.txt
 grep "average_flit_latency" m5out/stats.txt | sed 's/system.ruby.network.average_flit_latency\s*/average_flit_latency = /' >> network_stats.txt
 grep "average_hops" m5out/stats.txt | sed 's/system.ruby.network.average_hops\s*/average_hops = /' >> network_stats.txt
+grep "total_bufferless_packets" m5out/stats.txt | sed 's/system.ruby.network.total_bufferless_packets\s*/Total_bufferless_packets = /' >> network_stats.txt
 grep "total_uturn" m5out/stats.txt | sed 's/system.ruby.network.total_uturn\s*/total_uTurn = /' >> network_stats.txt
 grep "total_misroute" m5out/stats.txt | sed 's/system.ruby.network.total_misroute\s*/total_misroute = /' >> network_stats.txt
 grep "total_spins" m5out/stats.txt | sed 's/system.ruby.network.total_spins\s*/total_spins = /' >> network_stats.txt

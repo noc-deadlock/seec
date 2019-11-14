@@ -57,6 +57,9 @@ class VirtualChannel
     inline void set_enqueue_time(Cycles time) { m_enqueue_time = time; }
     inline VC_state_type get_state()        { return m_vc_state.first; }
 
+    inline bool isEmpty()                   { return m_input_buffer->isEmpty(); }
+
+
     inline bool isReady(Cycles curTime)
     {
         return m_input_buffer->isReady(curTime);

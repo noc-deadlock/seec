@@ -61,6 +61,9 @@ Router::Router(const Params *p)
 
     m_input_unit.clear();
     m_output_unit.clear();
+
+    made_one_pkt_bufferless = false;
+    m_bufferless_vnet_ptr = 0; // initialized the ptr to point to vnet-0
 }
 
 Router::~Router()
@@ -85,6 +88,42 @@ void
 Router::wakeup()
 {
     DPRINTF(RubyNetwork, "Router %d woke up\n", m_id);
+
+    // make packet bufferless in this turn
+    if (get_net_ptr()->m_seec == 1) {
+        if (curCycle() % get_net_ptr()->getNumRouters() == m_id) {
+            // make here provision of either injecting in a single VNet or in multi-VNet
+            if (get_net_ptr()->m_inj_single_vnet == 1) {
+                for (int inport_itr = 0; inport_itr < m_input_unit.size(); inport_itr++) {
+                    int inport = rand() % m_input_unit.size();
+                    m_input_unit[inport]->make_pkt_bufferless(0);
+                }
+            }
+            else {
+                // have VNet_pointer with each router and keep it updating in
+                // round-robin fashion
+                assert(get_net_ptr()->m_inj_single_vnet == 0);
+                for (int inport_itr = 0; inport_itr < m_input_unit.size(); inport_itr++) {
+                    int inport = rand() % m_input_unit.size();
+                    m_input_unit[inport]->make_pkt_bufferless(m_bufferless_vnet_ptr);
+                }
+                m_bufferless_vnet_ptr++;
+                if (m_bufferless_vnet_ptr == m_virtual_networks) {
+                    m_bufferless_vnet_ptr = 0;
+                }
+
+            }
+        }
+    }
+
+
+    // if the packet was ejected bufferlessly,
+    // then 'm_one_pkt_bufferless' must be true
+    // make it false so that router can eject the packet next time
+    // during its turn
+    if (made_one_pkt_bufferless) {
+        made_one_pkt_bufferless = false;
+    }
 
     // check for incoming flits
     for (int inport = 0; inport < m_input_unit.size(); inport++) {
