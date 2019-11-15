@@ -48,7 +48,7 @@ class RoutingUnit
   public:
     RoutingUnit(Router *router);
     int outportCompute(RouteInfo route,
-                      int inport,
+                      int vc, int inport,
                       PortDirection inport_dirn);
 
     // Topology-agnostic Routing Table based routing (default)

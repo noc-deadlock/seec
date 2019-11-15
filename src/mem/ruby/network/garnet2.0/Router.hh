@@ -91,7 +91,7 @@ class Router : public BasicRouter, public Consumer
     PortDirection getOutportDirection(int outport);
     PortDirection getInportDirection(int inport);
 
-    int route_compute(RouteInfo route, int inport, PortDirection direction);
+    int route_compute(RouteInfo route, int vc, int inport, PortDirection direction);
     void grant_switch(int inport, flit *t_flit);
     void schedule_wakeup(Cycles time);
 
@@ -126,10 +126,10 @@ class Router : public BasicRouter, public Consumer
    GarnetNetwork *m_network_ptr;
 
    uint32_t m_bufferless_vnet_ptr;
+   int m_virtual_networks, m_num_vcs, m_vc_per_vnet;
 
   private:
     Cycles m_latency;
-    int m_virtual_networks, m_num_vcs, m_vc_per_vnet;
 
     std::vector<InputUnit *> m_input_unit;
     std::vector<OutputUnit *> m_output_unit;

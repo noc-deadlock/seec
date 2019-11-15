@@ -137,7 +137,7 @@ RoutingUnit::addOutDirection(PortDirection outport_dirn, int outport_idx)
 // table is provided here.
 
 int
-RoutingUnit::outportCompute(RouteInfo route, int inport,
+RoutingUnit::outportCompute(RouteInfo route, int vc, int inport,
                             PortDirection inport_dirn)
 {
     int outport = -1;
@@ -156,16 +156,34 @@ RoutingUnit::outportCompute(RouteInfo route, int inport,
     RoutingAlgorithm routing_algorithm =
         (RoutingAlgorithm) m_router->get_net_ptr()->getRoutingAlgorithm();
 
+    // override here based on the vc.
+    // this override the choice of routing algorithm as well
+    int vc_base = route.vnet*m_router->m_vc_per_vnet;
+    if (routing_algorithm == ESCAPE_VC_) {
+        if (vc == vc_base)
+            routing_algorithm = WestFirst_;
+        else
+            routing_algorithm = RANDOM_; // this need to changed to RAND_/ADAPT_RAND
+    }
+
     switch (routing_algorithm) {
         case TABLE_:  outport =
             lookupRoutingTable(route.vnet, route.net_dest); break;
         case XY_:     outport =
             outportComputeXY(route, inport, inport_dirn); break;
+        case RANDOM_:    outport =
+            outportComputeRandom(route, inport, inport_dirn); break;
+        case ADAPT_RAND_:    outport =
+            outportComputeAdaptRand(route, inport, inport_dirn); break;
+        case WestFirst_:    outport =
+            outportComputeWestFirst(route, inport, inport_dirn); break;
         // any custom algorithm
         case CUSTOM_: outport =
             outportComputeCustom(route, inport, inport_dirn); break;
-        default: outport =
-            lookupRoutingTable(route.vnet, route.net_dest); break;
+        default:
+            assert(0);
+        /*outport =
+            lookupRoutingTable(route.vnet, route.net_dest); break;*/
     }
 
     assert(outport != -1);
