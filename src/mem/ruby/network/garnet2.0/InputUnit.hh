@@ -141,6 +141,28 @@ class InputUnit : public Consumer
         m_credit_link = credit_link;
     }
 
+    inline bool
+    vc_isEmpty(int invc)
+    {
+        return m_vcs[invc]->isEmpty();
+    }
+
+    inline int
+    get_numFreeVC(PortDirection dirn_)
+    {
+        assert(dirn_ == m_direction);
+        int freeVC = 0;
+        // since we always use vnet=0
+        for (int vc_=0; vc_ < m_vc_per_vnet; ++vc_) {
+             if(m_vcs[vc_]->isEmpty() == true)
+                freeVC++;
+        }
+    //        cout << "m_vc_per_vnet: " << m_vc_per_vnet << endl;
+    //        cout << "freeVC: " << freeVC << endl;
+        return freeVC;
+    }
+
+
     double get_buf_read_activity(unsigned int vnet) const
     { return m_num_buffer_reads[vnet]; }
     double get_buf_write_activity(unsigned int vnet) const

@@ -260,6 +260,7 @@ NetworkInterface::wakeup()
         Credit *t_credit = (Credit*) inCreditLink->consumeLink();
         m_out_vc_state[t_credit->get_vc()]->increment_credit();
         if (t_credit->is_free_signal()) {
+            DPRINTF(RubyNetwork, "Consumed the credit and setting the 'outVCState' at NIC to be IDLE\n");
             m_out_vc_state[t_credit->get_vc()]->setState(IDLE_, curCycle());
         }
         delete t_credit;
@@ -547,6 +548,7 @@ NetworkInterface::scheduleOutputLink()
                t_flit->get_type() == HEAD_TAIL_) {
                 m_ni_out_vcs_enqueue_time[vc] = Cycles(INFINITE_);
             }
+            DPRINTF(RubyNetwork, "[NetworkInterface::scheduleOutputLink()] now router should wakeup \n");
             return;
         }
     }

@@ -260,6 +260,58 @@ GarnetNetwork::get_router_id(int ni)
     return m_nis[ni]->get_router_id();
 }
 
+int
+GarnetNetwork::get_upstreamId( PortDirection inport_dir, int my_id )
+{
+    int num_cols = getNumCols();
+    int upstream_id = -1; // router_id for downstream router
+    /*outport direction fromt he flit for this router*/
+    if (inport_dir == "East") {
+        upstream_id = my_id + 1;
+    }
+    else if (inport_dir == "West") {
+        upstream_id = my_id - 1;
+    }
+    else if (inport_dir == "North") {
+        upstream_id = my_id + num_cols;
+    }
+    else if (inport_dir == "South") {
+        upstream_id = my_id - num_cols;
+    }
+    else if (inport_dir == "Local") {
+        upstream_id = my_id;
+        // #if (DEBUG_PRINT)
+            // cout << "inport_dir: " << inport_dir << endl;
+        // #endif
+        // assert(0);
+        // return -1;
+    }
+    else {
+        // #if (DEBUG_PRINT)
+            // cout << "inport_dir: " << inport_dir << endl;
+        // #endif
+        assert(0); // for completion of if-else chain
+        return -1;
+    }
+
+    return upstream_id;
+}
+
+
+Router*
+GarnetNetwork::get_upstreamrouter(PortDirection inport_dir, int upstream_id)
+{
+    int router_id = -1;
+    router_id = get_upstreamId( inport_dir, upstream_id);
+//    cout << "downstream router-id: " << router_id << endl;
+    // assert(router_id >= 0);
+    if ((router_id < 0) || (router_id >= getNumRouters()))
+        return NULL;
+    else
+        return m_routers[router_id];
+}
+
+
 void
 GarnetNetwork::regStats()
 {

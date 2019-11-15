@@ -167,7 +167,8 @@ InputUnit::make_pkt_bufferless(int vnet) {
             if((m_router->curCycle() % (m_router->get_net_ptr()->getNumRouters()) == m_router->get_id())
                 && m_router->made_one_pkt_bufferless == false /*&&
                 m_direction != "Local"*/) {
-                DPRINTF(RubyNetwork, "inport direction for which we are ejecting packet: %s\n", m_direction);
+                DPRINTF(RubyNetwork, "[InputUnit::make_pkt_bufferless()] "\
+                        "Inport direction for which we are ejecting packet: %s\n", m_direction);
                 cout << *t_flit << endl;
                 // int num_cols = m_router->get_net_ptr()->getNumCols();
                 int hop_traversed = -1;
@@ -194,14 +195,16 @@ InputUnit::make_pkt_bufferless(int vnet) {
                 // update the
                 int latency = 2*hop_traversed; // assume: 1-cycle link and 1-cycle router
 
+                assert(latency >= 0);
                 // put the flit in the NI special buffer for it to be ejected using
                 // NI's consume_bufferless_pkt() API
+                /*
                 m_router->m_network_ptr->m_nis[dest_ni]->\
                             m_bufferless_pkt->insert(t_flit);
 
                 m_router->m_network_ptr->m_nis[dest_ni]->\
                             consume_bufferless_pkt(latency);
-
+                */
                 m_router->made_one_pkt_bufferless = true;
                 // update the credits for upstream router here
                 // update the state of outVC at upstream router

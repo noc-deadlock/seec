@@ -86,6 +86,10 @@ class GarnetNetwork : public Network
     int getNumRouters();
     int get_router_id(int ni);
 
+    int get_upstreamId(PortDirection outport_dir, int upstream_id);
+    Router* get_upstreamrouter(PortDirection outport_dir, int upstream_id);
+    PortDirection get_upstreamOutportDirn(PortDirection outport_dir);
+
 
     // Methods used by Topology to setup the network
     void makeExtOutLink(SwitchID src, NodeID dest, BasicLink* link,

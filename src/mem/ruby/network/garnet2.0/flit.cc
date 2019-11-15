@@ -75,7 +75,10 @@ flit::print(std::ostream& out) const
     out << "Dest NI=" << m_route.dest_ni << " ";
     out << "Dest Router=" << m_route.dest_router << " ";
     out << "Enqueue Time=" << m_enqueue_time << " ";
+    out << "Dequeue Time=" << m_dequeue_time << " ";
+    out << "m_time=" << m_time << " ";
     out << "]";
+
 }
 
 bool

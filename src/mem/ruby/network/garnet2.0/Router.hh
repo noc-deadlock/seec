@@ -116,6 +116,8 @@ class Router : public BasicRouter, public Consumer
 
     uint32_t functionalWrite(Packet *);
 
+   int get_numFreeVC(PortDirection dirn_);
+
 
    bool made_one_pkt_bufferless; // to track if one packet
                                 // is ejected from the network

@@ -84,6 +84,23 @@ Router::init()
     m_switch->init();
 }
 
+int
+Router::get_numFreeVC(PortDirection dirn_) {
+    // Caution: This 'dirn_' is the direction of inport
+    // of downstream router...
+    assert(dirn_ != "Local");
+    int inport_id = m_routing_unit->m_inports_dirn2idx[dirn_]; // ahh.. this is wrong!
+
+//    cout << "------------------------------" << endl;
+//    cout << "curCycle(): " << curCycle() << endl;
+//    cout << "RouterId: " << m_id << endl;
+//    cout << "[get_numFreeVC] in direction: " << dirn_ << endl;
+//    cout << "[get_numFreeVC] inport_id: " << inport_id << endl;
+//    cout << "------------------------------" << endl;
+    return (m_input_unit[inport_id]->get_numFreeVC(dirn_));
+}
+
+
 void
 Router::wakeup()
 {

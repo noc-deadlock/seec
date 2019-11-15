@@ -32,6 +32,7 @@
 
 
 #include "mem/ruby/network/garnet2.0/flitBuffer.hh"
+// #include "debug/RubyNetwork.hh"
 
 flitBuffer::flitBuffer()
 {
@@ -54,6 +55,9 @@ flitBuffer::isReady(Cycles curTime)
 {
     if (m_buffer.size() != 0 ) {
         flit *t_flit = peekTopFlit();
+        std::cout << "[ " << curTime << " flitBuffer::isReady()]: " \
+        << *t_flit << std::endl;
+        // DPRINTF(RubyNetwork, "[flitBuffer::isRead()] %s\n", *t_flit);
         if (t_flit->get_time() <= curTime)
             return true;
     }

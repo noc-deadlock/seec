@@ -43,4 +43,10 @@ Credit::Credit(int vc, bool is_free_signal, Cycles curTime)
     m_vc = vc;
     m_is_free_signal = is_free_signal;
     m_time = curTime;
+    m_enqueue_time = curTime;
+    m_dequeue_time = curTime;
+    m_route.src_ni = -1;
+    m_route.src_router = -1;
+    m_route.dest_ni = -1;
+    m_route.dest_router = -1;
 }
