@@ -114,6 +114,17 @@ SwitchAllocator::arbitrate_inports()
     // Select a VC from each input in a round robin manner
     // Independent arbiter at each input port
     for (int inport = 0; inport < m_num_inports; inport++) {
+
+        // if the inport was the one where the packet was
+        // made bufferless, then it will not take part in SA
+        if (inport == m_router->bufferless_inport_id &&
+            (m_router->get_net_ptr()->m_seec == 1)) {
+            continue;
+        }
+
+        if (m_router->get_net_ptr()->m_seec == 0) {
+            assert(m_router->bufferless_inport_id == -1);
+        }
         int invc = m_round_robin_invc[inport];
 
         for (int invc_iter = 0; invc_iter < m_num_vcs; invc_iter++) {
@@ -189,7 +200,11 @@ SwitchAllocator::arbitrate_outports()
                     // VC Allocation - select any free VC from outport
                     outvc = vc_allocate(outport, inport, invc);
                 }
-
+                // This flit cannot be from the inport from which
+                // the packet was made bufferless
+                if ((m_router->get_net_ptr()->m_seec == 1)) {
+                    assert(inport != m_router->bufferless_inport_id);
+                }
                 // remove flit from Input VC
                 flit *t_flit = m_input_unit[inport]->getTopFlit(invc);
 

@@ -146,17 +146,6 @@ InputUnit::wakeup()
 bool
 InputUnit::make_pkt_bufferless(int vnet) {
 
-    // calcubate VC-base from the VNet
-    // look for the flit present in the base-VC of that VNet
-    int vc_base = vnet * m_vc_per_vnet;
-    flit *t_flit;
-    if (m_vcs[vc_base]->isEmpty()) {
-        return false;
-    } else {
-        // remove the flit because you are sure to
-        // eject and inject into the destination NI
-        t_flit = m_vcs[vc_base]->getTopFlit();
-    }
 
     // SEEC code:
     // Insert the flit here in the respective NI buffer for it
@@ -167,6 +156,19 @@ InputUnit::make_pkt_bufferless(int vnet) {
             if((m_router->curCycle() % (m_router->get_net_ptr()->getNumRouters()) == m_router->get_id())
                 && m_router->made_one_pkt_bufferless == false /*&&
                 m_direction != "Local"*/) {
+                // calcubate VC-base from the VNet
+                // look for the flit present in the base-VC of that VNet
+                int vc_base = vnet * m_vc_per_vnet;
+                flit *t_flit;
+                if (m_vcs[vc_base]->isEmpty()) {
+                    return false;
+                } else {
+                    // remove the flit because you are sure to
+                    // eject and inject into the destination NI
+                    t_flit = m_vcs[vc_base]->getTopFlit();
+                    // delete(t_flit);
+                    // return false;
+                }
                 DPRINTF(RubyNetwork, "[InputUnit::make_pkt_bufferless()] "\
                         "Inport direction for which we are ejecting packet: %s\n", m_direction);
                 cout << *t_flit << endl;
@@ -198,14 +200,15 @@ InputUnit::make_pkt_bufferless(int vnet) {
                 assert(latency >= 0);
                 // put the flit in the NI special buffer for it to be ejected using
                 // NI's consume_bufferless_pkt() API
-                /*
+
                 m_router->m_network_ptr->m_nis[dest_ni]->\
                             m_bufferless_pkt->insert(t_flit);
 
                 m_router->m_network_ptr->m_nis[dest_ni]->\
                             consume_bufferless_pkt(latency);
-                */
+
                 m_router->made_one_pkt_bufferless = true;
+                m_router->bufferless_inport_id = m_id;
                 // update the credits for upstream router here
                 // update the state of outVC at upstream router
                 increment_credit(vc_base, true, m_router->curCycle());

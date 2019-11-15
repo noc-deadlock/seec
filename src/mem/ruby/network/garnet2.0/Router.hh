@@ -121,6 +121,7 @@ class Router : public BasicRouter, public Consumer
 
    bool made_one_pkt_bufferless; // to track if one packet
                                 // is ejected from the network
+   int bufferless_inport_id;
 
    GarnetNetwork *m_network_ptr;
 

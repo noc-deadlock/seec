@@ -40,6 +40,7 @@
 Credit::Credit(int vc, bool is_free_signal, Cycles curTime)
 {
     m_id = 0;
+    m_type = HEAD_;
     m_vc = vc;
     m_is_free_signal = is_free_signal;
     m_time = curTime;
