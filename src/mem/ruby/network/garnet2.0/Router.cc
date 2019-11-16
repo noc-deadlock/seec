@@ -62,9 +62,8 @@ Router::Router(const Params *p)
     m_input_unit.clear();
     m_output_unit.clear();
 
-    made_one_pkt_bufferless = false;
+    // made_one_pkt_bufferless = false;
     m_bufferless_vnet_ptr = 0; // initialized the ptr to point to vnet-0
-    bufferless_inport_id = -1; // inport id from where packet was made bufferless
     num_bufferless_pkts = 0; // this is the current number of packets that a router
                              // has made bufferless so far
 }
@@ -85,6 +84,12 @@ Router::init()
 
     m_sw_alloc->init();
     m_switch->init();
+    // make this as Big as number of input ports presents in the router.
+    for(int ii=0; ii < m_input_unit.size(); ii++) {
+        bufferless_inport_id.push_back(-1); // inport id from where packet was made bufferless
+    }
+    cout << "bufferless_inport_id.size() : " << bufferless_inport_id.size() << endl;
+    assert (bufferless_inport_id.size() == m_input_unit.size());
 }
 
 int
@@ -142,28 +147,7 @@ Router::wakeup()
             }
         }
     }
-     assert(made_one_pkt_bufferless == false);
-    if (get_net_ptr()->m_seec == 1) {
-        if (curCycle() % get_net_ptr()->getNumRouters() == m_id) {
-            // if there was no bufferless packet ejected in the given cycle
-            // from router, then keep the bufferless_inport_id as '-1'
-            if (made_one_pkt_bufferless == false) {
-                bufferless_inport_id = -1; // reset it back to -1
-            }
-
-            // if the packet was ejected bufferlessly,
-            // then 'm_one_pkt_bufferless' must be true
-            // make it false so that router can eject the packet next time
-            // during its turn
-            if (made_one_pkt_bufferless == true) {
-                made_one_pkt_bufferless = false;
-            }
-
-            assert(num_bufferless_pkts <=  get_net_ptr()->m_num_bufferless_pkt);
-            // reset 'num_bufferless_pkts' to 0 for next turn
-            num_bufferless_pkts = 0;
-        }
-    }
+     // assert(made_one_pkt_bufferless == false);
 
 
     // check for incoming flits
@@ -186,6 +170,24 @@ Router::wakeup()
 
     // Switch Traversal
     m_switch->wakeup();
+
+
+    // SEEC reset logic
+    assert(num_bufferless_pkts <=  get_net_ptr()->m_num_bufferless_pkt);
+    if (get_net_ptr()->m_seec == 1) {
+        if (curCycle() % get_net_ptr()->getNumRouters() == m_id) {
+
+            // reset the bufferless inport-ids for all the
+            // inports that were made bufferless
+            int ii;
+            for (ii = 0; ii < m_input_unit.size(); ++ii) {
+                bufferless_inport_id[ii] = -1;
+            }
+            // reset 'num_bufferless_pkts' to 0 for next turn
+            num_bufferless_pkts = 0;
+        }
+    }
+
 }
 
 void

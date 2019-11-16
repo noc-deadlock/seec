@@ -212,7 +212,10 @@ InputUnit::make_pkt_bufferless(int vnet) {
                 // m_router->made_one_pkt_bufferless = true;
                 // update here the counter
                 m_router->num_bufferless_pkts++;
-                m_router->bufferless_inport_id = m_id;
+                // index into this vector to checkmark the input port
+                // that is busy
+                // 1 means busy (bufferless) -1 means not bufferless
+                m_router->bufferless_inport_id[m_id] = 1;
                 // update the credits for upstream router here
                 // update the state of outVC at upstream router
                 increment_credit(vc_base, true, m_router->curCycle());

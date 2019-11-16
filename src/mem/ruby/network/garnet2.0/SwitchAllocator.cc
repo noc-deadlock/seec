@@ -117,13 +117,17 @@ SwitchAllocator::arbitrate_inports()
 
         // if the inport was the one where the packet was
         // made bufferless, then it will not take part in SA
-        if (inport == m_router->bufferless_inport_id &&
-            (m_router->get_net_ptr()->m_seec == 1)) {
-            continue;
+        if ( (m_router->get_net_ptr()->m_seec == 1)) {
+            // no need to loop over. 'm_bufferless_inport_id' is indexed by
+            // inport_id
+            if (m_router->bufferless_inport_id[inport] == 1) {
+                continue;
+            }
         }
 
         if (m_router->get_net_ptr()->m_seec == 0) {
-            assert(m_router->bufferless_inport_id == -1);
+            for (int ii=0; ii < m_num_inports; ii++)
+                assert(m_router->bufferless_inport_id[ii] == -1);
         }
         int invc = m_round_robin_invc[inport];
 
@@ -203,7 +207,7 @@ SwitchAllocator::arbitrate_outports()
                 // This flit cannot be from the inport from which
                 // the packet was made bufferless
                 if ((m_router->get_net_ptr()->m_seec == 1)) {
-                    assert(inport != m_router->bufferless_inport_id);
+                    assert(m_router->bufferless_inport_id[inport] == -1);
                 }
                 // remove flit from Input VC
                 flit *t_flit = m_input_unit[inport]->getTopFlit(invc);

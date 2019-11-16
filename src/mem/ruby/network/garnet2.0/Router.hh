@@ -119,10 +119,10 @@ class Router : public BasicRouter, public Consumer
    int get_numFreeVC(PortDirection dirn_);
 
 
-   bool made_one_pkt_bufferless; // to track if one packet
+   // bool made_one_pkt_bufferless; // to track if one packet
                                 // is ejected from the network
    int num_bufferless_pkts;
-   int bufferless_inport_id;
+   std::vector<int> bufferless_inport_id;
 
    GarnetNetwork *m_network_ptr;
 
