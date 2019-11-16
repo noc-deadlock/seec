@@ -173,7 +173,7 @@ InputUnit::make_pkt_bufferless(int vnet) {
                 }
                 DPRINTF(RubyNetwork, "[InputUnit::make_pkt_bufferless()] "\
                         "Inport direction for which we are ejecting packet: %s\n", m_direction);
-                cout << *t_flit << endl;
+                DPRINTF(RubyNetwork,"%s \n", *t_flit);
                 // int num_cols = m_router->get_net_ptr()->getNumCols();
                 int hop_traversed = -1;
                 int num_cols = m_router->get_net_ptr()->getNumCols();
