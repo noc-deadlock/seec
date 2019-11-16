@@ -101,9 +101,11 @@ GarnetNetwork::GarnetNetwork(const Params *p)
     m_seec = p->seec;
     m_one_pkt_bufferless = p->one_pkt_bufferless;
     m_inj_single_vnet = p->inj_single_vnet;
+    m_num_bufferless_pkt = p->num_bufferless_pkt;
     cout << "SEEC enabled:  m_seec: " << m_seec << endl;
     cout << "m_one_pkt_bufferless: " << m_one_pkt_bufferless << endl;
     cout << "m_inj_single_vnet: " << m_inj_single_vnet << endl;
+    cout << "m_num_bufferless_pkt: " << m_num_bufferless_pkt << endl;
     // assert(0);
 }
 

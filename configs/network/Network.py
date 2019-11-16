@@ -85,6 +85,10 @@ def define_options(parser):
     parser.add_option("--inj-single-vnet", action="store",
                         type="int", default=0,
                         help="if set one then inject all types of packets in the single vnet")
+    parser.add_option("--num-bufferless-pkt", action="store",
+                        type="int", default=0,
+                        help="if set then number of router will make maximum that many pkts \
+                        bufferless at a time")
 
 
 def create_network(options, ruby):
@@ -122,6 +126,7 @@ def init_network(options, network, InterfaceClass):
         network.seec = options.seec
         network.one_pkt_bufferless = options.one_pkt_bufferless
         network.inj_single_vnet = options.inj_single_vnet
+        network.num_bufferless_pkt = options.num_bufferless_pkt
 
 
     if options.network == "simple":

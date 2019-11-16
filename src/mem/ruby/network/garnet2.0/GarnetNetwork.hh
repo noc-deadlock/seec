@@ -151,6 +151,7 @@ class GarnetNetwork : public Network
    uint32_t m_seec;
    uint32_t m_one_pkt_bufferless;
    uint32_t m_inj_single_vnet;
+   uint32_t m_num_bufferless_pkt;
 
    // SEEC related Stats:
    Stats::Scalar m_bufferless_pkts;

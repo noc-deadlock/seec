@@ -65,6 +65,8 @@ Router::Router(const Params *p)
     made_one_pkt_bufferless = false;
     m_bufferless_vnet_ptr = 0; // initialized the ptr to point to vnet-0
     bufferless_inport_id = -1; // inport id from where packet was made bufferless
+    num_bufferless_pkts = 0; // this is the current number of packets that a router
+                             // has made bufferless so far
 }
 
 Router::~Router()
@@ -114,11 +116,12 @@ Router::wakeup()
             if (get_net_ptr()->m_inj_single_vnet == 1) {
                 for (int inport = 0; inport < m_input_unit.size(); inport++) {
                     // int inport = rand() % m_input_unit.size();
-                    if (made_one_pkt_bufferless == false) {
+                    // if (made_one_pkt_bufferless == false) {
+                    if (num_bufferless_pkts < get_net_ptr()->m_num_bufferless_pkt) {
                         m_input_unit[inport]->make_pkt_bufferless(0);
                     }
                 }
-                DPRINTF(RubyNetwork, "made_one_pkt_bufferless: %d\n", made_one_pkt_bufferless);
+                DPRINTF(RubyNetwork, "num_bufferless_pkts: %d\n", num_bufferless_pkts);
             }
             else {
                 // have VNet_pointer with each router and keep it updating in
@@ -126,7 +129,7 @@ Router::wakeup()
                 assert(get_net_ptr()->m_inj_single_vnet == 0);
                 for (int inport = 0; inport < m_input_unit.size(); inport++) {
                     // int inport = rand() % m_input_unit.size();
-                    if (made_one_pkt_bufferless == false) {
+                    if (num_bufferless_pkts < get_net_ptr()->m_num_bufferless_pkt) {
                         m_input_unit[inport]->make_pkt_bufferless(m_bufferless_vnet_ptr);
                     }
                 }
@@ -134,25 +137,31 @@ Router::wakeup()
                 if (m_bufferless_vnet_ptr == m_virtual_networks) {
                     m_bufferless_vnet_ptr = 0;
                 }
-                DPRINTF(RubyNetwork, "made_one_pkt_bufferless: %d\n", made_one_pkt_bufferless);
+                DPRINTF(RubyNetwork, "num_bufferless_pkts: %d\n", num_bufferless_pkts);
                 DPRINTF(RubyNetwork, "m_bufferless_vnet_ptr: %d\n", m_bufferless_vnet_ptr);
             }
         }
     }
-
+     assert(made_one_pkt_bufferless == false);
     if (get_net_ptr()->m_seec == 1) {
-        // if there was no bufferless packet ejected in the given cycle
-        // from router, then keep the bufferless_inport_id as '-1'
-        if (made_one_pkt_bufferless == false) {
-            bufferless_inport_id = -1; // reset it back to -1
-        }
+        if (curCycle() % get_net_ptr()->getNumRouters() == m_id) {
+            // if there was no bufferless packet ejected in the given cycle
+            // from router, then keep the bufferless_inport_id as '-1'
+            if (made_one_pkt_bufferless == false) {
+                bufferless_inport_id = -1; // reset it back to -1
+            }
 
-        // if the packet was ejected bufferlessly,
-        // then 'm_one_pkt_bufferless' must be true
-        // make it false so that router can eject the packet next time
-        // during its turn
-        if (made_one_pkt_bufferless == true) {
-            made_one_pkt_bufferless = false;
+            // if the packet was ejected bufferlessly,
+            // then 'm_one_pkt_bufferless' must be true
+            // make it false so that router can eject the packet next time
+            // during its turn
+            if (made_one_pkt_bufferless == true) {
+                made_one_pkt_bufferless = false;
+            }
+
+            assert(num_bufferless_pkts <=  get_net_ptr()->m_num_bufferless_pkt);
+            // reset 'num_bufferless_pkts' to 0 for next turn
+            num_bufferless_pkts = 0;
         }
     }
 

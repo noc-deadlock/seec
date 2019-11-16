@@ -353,6 +353,7 @@ SwitchAllocator::send_allowed(int inport, int invc, int outport, int outvc)
 }
 
 // Assign a free VC to the winner of the output port.
+/*
 int
 SwitchAllocator::vc_allocate(int outport, int inport, int invc)
 {
@@ -364,6 +365,46 @@ SwitchAllocator::vc_allocate(int outport, int inport, int invc)
     m_input_unit[inport]->grant_outvc(invc, outvc);
     return outvc;
 }
+*/
+
+// Assign a free VC to the winner of the output port.
+// int
+// SwitchAllocator::vc_allocate(int outport, int inport, int invc)
+// {
+//     // Select a free VC from the output port
+//     int outvc = m_output_unit[outport]->select_free_vc(get_vnet(invc));
+
+//     // has to get a valid VC since it checked before performing SA
+//     assert(outvc != -1);
+//     m_input_unit[inport]->grant_outvc(invc, outvc);
+//     return outvc;
+// }
+
+// Assign a free VC to the winner of the output port.
+// Check here if the destination wrt current router lies
+// in the II or III quandrant then don't allocate the
+// 'escape vc', which is base
+int
+SwitchAllocator::vc_allocate(int outport, int inport, int invc)
+{
+    // ICN Lab 3:
+    // Hint: invc, route, inport_dirn, outport_dirn are provided
+    // to implement escape VC
+    PortDirection inport_dirn  = m_input_unit[inport]->get_direction();
+    PortDirection outport_dirn = m_output_unit[outport]->get_direction();
+    RouteInfo route = m_input_unit[inport]->peekTopFlit(invc)->get_route();
+
+    // Select a free VC from the output port
+    int vnet = get_vnet(invc);
+    int outvc = m_output_unit[outport]->select_free_vc(vnet, invc,
+                                        inport_dirn, outport_dirn, route);
+
+    // has to get a valid VC since it checked before performing SA
+    assert(outvc != -1);
+    m_input_unit[inport]->grant_outvc(invc, outvc);
+    return outvc;
+}
+
 
 // Wakeup the router next cycle to perform SA again
 // if there are flits ready.

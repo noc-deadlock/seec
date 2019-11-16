@@ -52,6 +52,9 @@ class GarnetNetwork(RubyNetwork):
     one_pkt_bufferless = Param.UInt32(Parent.one_pkt_bufferless, "make one packet bufferless")
     inj_single_vnet = Param.UInt32(Parent.inj_single_vnet,
                         "if set inject all packets in the single VNet")
+    num_bufferless_pkt = Param.UInt32(Parent.num_bufferless_pkt,
+                        "if set then number of router will make maximum that many pkts \
+                        bufferless at a time")
 
 class GarnetNetworkInterface(ClockedObject):
     type = 'GarnetNetworkInterface'

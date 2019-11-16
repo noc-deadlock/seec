@@ -151,10 +151,12 @@ InputUnit::make_pkt_bufferless(int vnet) {
     // Insert the flit here in the respective NI buffer for it
     // to get consumed add updates the latency and hop apporpriately.
     if (m_router->m_network_ptr->m_seec == 1 ) { // if 'SEEC' is set true
-        if (m_router->m_network_ptr->m_one_pkt_bufferless == 1) {
+        if (m_router->get_net_ptr()->m_num_bufferless_pkt >= 1) {
             // check if it is the turn of this router:
-            if((m_router->curCycle() % (m_router->get_net_ptr()->getNumRouters()) == m_router->get_id())
-                && m_router->made_one_pkt_bufferless == false /*&&
+            assert((m_router->curCycle() %
+            (m_router->get_net_ptr()->getNumRouters()) == m_router->get_id()));
+            if((m_router->num_bufferless_pkts < m_router->get_net_ptr()->m_num_bufferless_pkt)
+                /*m_router->made_one_pkt_bufferless == false &&
                 m_direction != "Local"*/) {
                 // calcubate VC-base from the VNet
                 // look for the flit present in the base-VC of that VNet
@@ -207,7 +209,9 @@ InputUnit::make_pkt_bufferless(int vnet) {
                 m_router->m_network_ptr->m_nis[dest_ni]->\
                             consume_bufferless_pkt(latency);
 
-                m_router->made_one_pkt_bufferless = true;
+                // m_router->made_one_pkt_bufferless = true;
+                // update here the counter
+                m_router->num_bufferless_pkts++;
                 m_router->bufferless_inport_id = m_id;
                 // update the credits for upstream router here
                 // update the state of outVC at upstream router

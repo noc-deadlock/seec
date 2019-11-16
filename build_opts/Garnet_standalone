@@ -1,4 +1,5 @@
 TARGET_ISA = 'alpha'
 SS_COMPATIBLE_FP = 1
 CPU_MODELS = 'AtomicSimpleCPU,TimingSimpleCPU,O3CPU,MinorCPU'
+NUMBER_BITS_PER_SET = '256'
 PROTOCOL = 'Garnet_standalone'
