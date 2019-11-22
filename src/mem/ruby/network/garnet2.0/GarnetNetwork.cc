@@ -66,6 +66,15 @@ GarnetNetwork::GarnetNetwork(const Params *p)
     m_buffers_per_ctrl_vc = p->buffers_per_ctrl_vc;
     m_routing_algorithm = p->routing_algorithm;
 
+    max_flit_latency = Cycles(0);
+    max_flit_network_latency = Cycles(0);
+    max_flit_queueing_latency = Cycles(0);
+
+    min_flit_latency = Cycles(999999); // 1 million
+    min_flit_network_latency = Cycles(999999);
+    min_flit_queueing_latency = Cycles(999999);
+
+
     m_enable_fault_model = p->enable_fault_model;
     if (m_enable_fault_model)
         fault_model = p->fault_model;
@@ -331,6 +340,51 @@ GarnetNetwork::regStats()
         .name(name() + ".total_bufferless_packets")
         .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
         ;
+
+    m_flt_dist
+        .init(m_routers.size())
+        .name(name() + ".flit_distribution")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
+    m_network_latency_histogram
+        .init(21)
+        .name(name() + ".network_latency_histogram")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
+    m_flt_latency_hist
+        .init(100)
+        .name(name() + ".flit_latency_histogram")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
+    m_flt_network_latency_hist
+        .init(100)
+        .name(name() + ".flit_network_latency_histogram")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
+    m_flt_queueing_latency_hist
+        .init(100)
+        .name(name() + ".flit_queueing_latency_histogram")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
+    m_max_flit_latency
+        .name(name() + ".max_flit_latency");
+    m_max_flit_network_latency
+        .name(name() + ".max_flit_network_latency");
+    m_max_flit_queueing_latency
+        .name(name() + ".max_flit_queueing_latency");
+
+    m_min_flit_latency
+        .name(name() + ".min_flit_latency");
+    m_min_flit_network_latency
+        .name(name() + ".min_flit_network_latency");
+    m_min_flit_queueing_latency
+        .name(name() + ".min_flit_queueing_latency");
+
 
     m_packets_injected
         .init(m_virtual_networks)
