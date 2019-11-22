@@ -111,6 +111,50 @@ class GarnetNetwork : public Network
     void print(std::ostream& out) const;
 
     // increment counters
+
+    void update_flit_latency_histogram(Cycles& latency, int vnet) {
+
+        m_flt_latency_hist.sample(latency);
+        if(latency > max_flit_latency)
+            max_flit_latency = latency;
+        if (latency < min_flit_latency) {
+            min_flit_latency = latency;
+        }
+
+    }
+
+    void update_flit_network_latency_histogram(Cycles& latency, int vnet) {
+
+        m_flt_network_latency_hist.sample(latency);
+        if(latency > max_flit_network_latency)
+            max_flit_network_latency = latency;
+        if (latency < min_flit_network_latency) {
+            min_flit_network_latency = latency;
+        }
+
+    }
+
+    void update_flit_queueing_latency_histogram(Cycles& latency, int vnet) {
+
+        m_flt_queueing_latency_hist.sample(latency);
+        if(latency > max_flit_queueing_latency)
+            max_flit_queueing_latency = latency;
+        if (latency < min_flit_queueing_latency) {
+            min_flit_queueing_latency = latency;
+        }
+
+    }
+
+    void update_network_latency_histogram(Cycles latency) {
+            uint64_t lat_ = uint64_t(latency);
+            int index = lat_/5;
+            if(index < 20){
+                m_network_latency_histogram[index]++;
+            } else {
+                m_network_latency_histogram[20]++;
+            }
+    }
+
     void increment_injected_packets(int vnet) { m_packets_injected[vnet]++; }
     void increment_received_packets(int vnet) { m_packets_received[vnet]++; }
 
@@ -127,7 +171,19 @@ class GarnetNetwork : public Network
     }
 
     void increment_injected_flits(int vnet) { m_flits_injected[vnet]++; }
-    void increment_received_flits(int vnet) { m_flits_received[vnet]++; }
+    void increment_received_flits(int vnet) {
+        m_flits_received[vnet]++;
+
+        // transfer all numbers to stat variable:
+        m_max_flit_latency = max_flit_latency;
+        m_max_flit_network_latency = max_flit_network_latency;
+        m_max_flit_queueing_latency = max_flit_queueing_latency;
+
+        m_min_flit_latency = min_flit_latency;
+        m_min_flit_network_latency = min_flit_network_latency;
+        m_min_flit_queueing_latency = min_flit_queueing_latency;
+
+    }
 
     void
     increment_flit_network_latency(Cycles latency, int vnet)
@@ -152,6 +208,30 @@ class GarnetNetwork : public Network
    uint32_t m_one_pkt_bufferless;
    uint32_t m_inj_single_vnet;
    uint32_t m_num_bufferless_pkt;
+
+
+   Cycles max_flit_latency;
+   Cycles max_flit_network_latency;
+   Cycles max_flit_queueing_latency;
+
+   Cycles min_flit_latency;
+   Cycles min_flit_network_latency;
+   Cycles min_flit_queueing_latency;
+
+   Stats::Vector m_flt_dist;
+   Stats::Vector m_network_latency_histogram;
+   Stats::Scalar m_max_flit_latency;
+   Stats::Scalar m_max_flit_network_latency;
+   Stats::Scalar m_max_flit_queueing_latency;
+
+   Stats::Scalar m_min_flit_latency;
+   Stats::Scalar m_min_flit_network_latency;
+   Stats::Scalar m_min_flit_queueing_latency;
+
+   Stats::Histogram m_flt_latency_hist;
+   Stats::Histogram m_flt_network_latency_hist;
+   Stats::Histogram m_flt_queueing_latency_hist;
+
 
    // SEEC related Stats:
    Stats::Scalar m_bufferless_pkts;
