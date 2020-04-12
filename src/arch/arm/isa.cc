@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2019 ARM Limited
+ * Copyright (c) 2010-2020 ARM Limited
  * All rights reserved
  *
  * The license below extends only to copyright in the software and shall
@@ -61,15 +61,10 @@
 namespace ArmISA
 {
 
-ISA::ISA(Params *p)
-    : SimObject(p),
-      system(NULL),
-      _decoderFlavour(p->decoderFlavour),
-      _vecRegRenameMode(Enums::Full),
-      pmu(p->pmu),
-      haveGICv3CPUInterface(false),
-      impdefAsNop(p->impdef_nop),
-      afterStartup(false)
+ISA::ISA(Params *p) : BaseISA(p), system(NULL),
+    _decoderFlavour(p->decoderFlavour), _vecRegRenameMode(Enums::Full),
+    pmu(p->pmu), haveGICv3CPUInterface(false), impdefAsNop(p->impdef_nop),
+    afterStartup(false)
 {
     miscRegs[MISCREG_SCTLR_RST] = 0;
 
@@ -319,9 +314,20 @@ void
 ISA::initID32(const ArmISAParams *p)
 {
     // Initialize configurable default values
-    miscRegs[MISCREG_MIDR] = p->midr;
-    miscRegs[MISCREG_MIDR_EL1] = p->midr;
-    miscRegs[MISCREG_VPIDR] = p->midr;
+
+    uint32_t midr;
+    if (p->midr != 0x0)
+        midr = p->midr;
+    else if (highestELIs64)
+        // Cortex-A57 TRM r0p0 MIDR
+        midr = 0x410fd070;
+    else
+        // Cortex-A15 TRM r0p0 MIDR
+        midr = 0x410fc0f0;
+
+    miscRegs[MISCREG_MIDR] = midr;
+    miscRegs[MISCREG_MIDR_EL1] = midr;
+    miscRegs[MISCREG_VPIDR] = midr;
 
     miscRegs[MISCREG_ID_ISAR0] = p->id_isar0;
     miscRegs[MISCREG_ID_ISAR1] = p->id_isar1;
@@ -479,12 +485,10 @@ ISA::readMiscReg(int misc_reg, ThreadContext *tc)
 
     switch (unflattenMiscReg(misc_reg)) {
       case MISCREG_HCR:
-        {
+      case MISCREG_HCR2:
             if (!haveVirtualization)
                 return 0;
-            else
-                return readMiscRegNoEffect(MISCREG_HCR);
-        }
+            break;
       case MISCREG_CPACR:
         {
             const uint32_t ones = (uint32_t)(-1);
@@ -1028,11 +1032,10 @@ ISA::setMiscReg(int misc_reg, RegVal val, ThreadContext *tc)
             }
             break;
           case MISCREG_HCR:
-            {
+          case MISCREG_HCR2:
                 if (!haveVirtualization)
                     return;
-            }
-            break;
+                break;
           case MISCREG_IFSR:
             {
                 // ARM ARM (ARM DDI 0406C.b) B4.1.96
@@ -2180,6 +2183,18 @@ ISA::zeroSveVecRegUpperPart(VecRegContainer &vc, unsigned eCount)
     for (int i = 2; i < eCount; ++i) {
         vv[i] = 0;
     }
+}
+
+ISA::MiscRegLUTEntryInitializer::chain
+ISA::MiscRegLUTEntryInitializer::highest(ArmSystem *const sys) const
+{
+    switch (FullSystem ? sys->highestEL() : EL1) {
+      case EL0:
+      case EL1: priv(); break;
+      case EL2: hyp(); break;
+      case EL3: mon(); break;
+    }
+    return *this;
 }
 
 }  // namespace ArmISA

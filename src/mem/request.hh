@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2013,2017-2018 ARM Limited
+ * Copyright (c) 2012-2013,2017-2019 ARM Limited
  * All rights reserved
  *
  * The license below extends only to copyright in the software and shall
@@ -55,6 +55,7 @@
 #include <cassert>
 #include <climits>
 
+#include "base/amo.hh"
 #include "base/flags.hh"
 #include "base/logging.hh"
 #include "base/types.hh"
@@ -170,12 +171,6 @@ class Request
           * launch or completion.
           */
         KERNEL                      = 0x00001000,
-
-        /**
-         * The request should be handled by the generic IPR code (only
-         * valid together with MMAPPED_IPR)
-         */
-        GENERIC_IPR                 = 0x08000000,
 
         /** The request targets the secure memory space. */
         SECURE                      = 0x10000000,
@@ -478,6 +473,7 @@ class Request
 
     Request(const Request& other)
         : _paddr(other._paddr), _size(other._size),
+          _byteEnable(other._byteEnable),
           _masterId(other._masterId),
           _flags(other._flags),
           _memSpaceConfigFlags(other._memSpaceConfigFlags),
@@ -647,6 +643,20 @@ class Request
     {
         assert(be.empty() || be.size() == _size);
         _byteEnable = be;
+    }
+
+    /**
+     * Returns true if the memory request is masked, which means
+     * there is at least one byteEnable element which is false
+     * (byte is masked)
+     */
+    bool
+    isMasked() const
+    {
+        return std::find(
+            _byteEnable.begin(),
+            _byteEnable.end(),
+            false) != _byteEnable.end();
     }
 
     /** Accessor for time. */

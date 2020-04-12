@@ -30,6 +30,7 @@
 
 #include "arch/sparc/system.hh"
 
+#include "arch/sparc/faults.hh"
 #include "arch/vtophys.hh"
 #include "base/loader/object_file.hh"
 #include "base/loader/symtab.hh"
@@ -37,8 +38,6 @@
 #include "mem/physical.hh"
 #include "params/SparcSystem.hh"
 #include "sim/byteswap.hh"
-
-using namespace BigEndianGuest;
 
 namespace
 {
@@ -156,6 +155,14 @@ SparcSystem::initState()
 
     // @todo any fixup code over writing data in binaries on setting break
     // events on functions should happen here.
+
+    if (threadContexts.empty())
+        return;
+
+    // Other CPUs will get activated by IPIs.
+    auto *tc = threadContexts[0];
+    SparcISA::PowerOnReset().invoke(tc);
+    tc->activate();
 }
 
 SparcSystem::~SparcSystem()

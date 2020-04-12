@@ -43,12 +43,12 @@
 
 #include "arch/x86/bios/intelmp.hh"
 #include "arch/x86/bios/smbios.hh"
+#include "arch/x86/faults.hh"
 #include "arch/x86/isa_traits.hh"
 #include "base/loader/object_file.hh"
 #include "cpu/thread_context.hh"
 #include "params/X86System.hh"
 
-using namespace LittleEndianGuest;
 using namespace X86ISA;
 
 X86System::X86System(Params *p) :
@@ -107,6 +107,19 @@ void
 X86System::initState()
 {
     System::initState();
+
+    for (auto *tc: threadContexts) {
+        X86ISA::InitInterrupt(0).invoke(tc);
+
+        if (tc->contextId() == 0) {
+            tc->activate();
+        } else {
+            // This is an application processor (AP). It should be initialized
+            // to look like only the BIOS POST has run on it and put then put
+            // it into a halted state.
+            tc->suspend();
+        }
+    }
 
     if (!kernel)
         fatal("No kernel to load.\n");

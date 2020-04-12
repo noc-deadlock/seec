@@ -314,10 +314,10 @@ def template SveLoadAndReplExecute {{
         %(op_rd)s;
         %(ea_code)s;
 
-        MemElemType memData;
+        MemElemType memData = 0;
 
         if (fault == NoFault) {
-            fault = readMemAtomic(xc, traceData, EA, memData,
+            fault = readMemAtomicLE(xc, traceData, EA, memData,
                 this->memAccessFlags);
             %(memacc_code)s;
         }
@@ -344,7 +344,7 @@ def template SveLoadAndReplInitiateAcc {{
 
         %(ea_code)s;
 
-        MemElemType memData;
+        MemElemType memData = 0;
 
         if (fault == NoFault) {
             fault = initiateMemRead(xc, traceData, EA, memData,
@@ -368,8 +368,8 @@ def template SveLoadAndReplCompleteAcc {{
         %(op_decl)s;
         %(op_rd)s;
 
-        MemElemType memData;
-        getMem(pkt, memData, traceData);
+        MemElemType memData = 0;
+        getMemLE(pkt, memData, traceData);
 
         if (fault == NoFault) {
             %(memacc_code)s;
@@ -553,7 +553,7 @@ def template SveGatherLoadMicroopExecute {{
 
         int index = elemIndex;
         if (%(pred_check_code)s) {
-            fault = readMemAtomic(xc, traceData, EA, memData,
+            fault = readMemAtomicLE(xc, traceData, EA, memData,
                 this->memAccessFlags);
         }
 
@@ -597,7 +597,7 @@ def template SveGatherLoadMicroopInitiateAcc {{
         %(op_rd)s;
         %(ea_code)s;
 
-        MemElemType memData;
+        MemElemType memData = 0;
 
         int index = elemIndex;
         if (%(pred_check_code)s) {
@@ -638,7 +638,7 @@ def template SveGatherLoadMicroopCompleteAcc {{
 
         MemElemType memData = 0;
         if (xc->readMemAccPredicate()) {
-            getMem(pkt, memData, traceData);
+            getMemLE(pkt, memData, traceData);
         }
 
         %(memacc_code)s;
@@ -663,13 +663,13 @@ def template SveScatterStoreMicroopExecute {{
         %(op_rd)s;
         %(ea_code)s;
 
-        MemElemType memData;
+        MemElemType memData = 0;
         %(memacc_code)s;
 
         int index = elemIndex;
         if (%(pred_check_code)s) {
-            fault = writeMemAtomic(xc, traceData, memData, EA,
-                                   this->memAccessFlags, NULL);
+            fault = writeMemAtomicLE(xc, traceData, memData, EA,
+                                     this->memAccessFlags, NULL);
         }
 
         if (fault == NoFault) {
@@ -693,12 +693,12 @@ def template SveScatterStoreMicroopInitiateAcc {{
         %(op_rd)s;
         %(ea_code)s;
 
-        MemElemType memData;
+        MemElemType memData = 0;
         %(memacc_code)s;
 
         int index = elemIndex;
         if (%(pred_check_code)s) {
-            fault = writeMemTiming(xc, traceData, memData, EA,
+            fault = writeMemTimingLE(xc, traceData, memData, EA,
                                    this->memAccessFlags, NULL);
         } else {
             xc->setPredicate(false);

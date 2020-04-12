@@ -45,6 +45,7 @@
 #include <cerrno>
 #include <memory>
 
+#include "arch/arm/interrupts.hh"
 #include "arch/registers.hh"
 #include "cpu/kvm/base.hh"
 #include "debug/Kvm.hh"
@@ -270,8 +271,9 @@ ArmKvmCPU::startup()
 Tick
 ArmKvmCPU::kvmRun(Tick ticks)
 {
-    bool simFIQ(interrupts[0]->checkRaw(INT_FIQ));
-    bool simIRQ(interrupts[0]->checkRaw(INT_IRQ));
+    auto interrupt = static_cast<ArmISA::Interrupts *>(interrupts[0]);
+    const bool simFIQ(interrupt->checkRaw(INT_FIQ));
+    const bool simIRQ(interrupt->checkRaw(INT_IRQ));
 
     if (fiqAsserted != simFIQ) {
         fiqAsserted = simFIQ;
@@ -318,10 +320,10 @@ ArmKvmCPU::onKvmExitHypercall()
     ThreadContext *tc(getContext(0));
     const uint32_t reg_ip(tc->readIntRegFlat(INTREG_R12));
     const uint8_t func((reg_ip >> 8) & 0xFF);
-    const uint8_t subfunc(reg_ip & 0xFF);
 
-    DPRINTF(Kvm, "KVM Hypercall: 0x%x/0x%x\n", func, subfunc);
-    const uint64_t ret(PseudoInst::pseudoInst(getContext(0), func, subfunc));
+    DPRINTF(Kvm, "KVM Hypercall: %#x/%#x\n", func, subfunc);
+    const uint64_t ret =
+        PseudoInst::pseudoInst<PseudoInstABI>(getContext(0), func);
 
     // Just set the return value using the KVM API instead of messing
     // with the context. We could have used the context, but that
