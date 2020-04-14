@@ -55,6 +55,9 @@ class GarnetNetwork(RubyNetwork):
     num_bufferless_pkt = Param.UInt32(Parent.num_bufferless_pkt,
                         "if set then number of router will make maximum that many pkts \
                         bufferless at a time")
+    bufferless_router = Param.Int32(Parent.bufferless_router,
+                        "This number represents maximum number of routers that can \
+                        make the packets bufferless in a single cycle")
 
 class GarnetNetworkInterface(ClockedObject):
     type = 'GarnetNetworkInterface'

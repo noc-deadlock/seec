@@ -118,6 +118,41 @@ class Router : public BasicRouter, public Consumer
 
    int get_numFreeVC(PortDirection dirn_);
 
+   bool myTurn() {
+        bool result = false;
+        if (get_net_ptr()->router_cycle.first == -1) {
+            // multi-seec disabled:
+            if (curCycle() % get_net_ptr()->getNumRouters() == m_id) {
+                result = true;
+            }
+            else {
+                result = false;
+            }
+        }
+        else {
+            // multi-seec is enabled
+            assert(get_net_ptr()->router_cycle.first >= 0);
+            if ((get_net_ptr()->router_cycle.first > 0) &&
+                (get_net_ptr()->router_cycle.second == curCycle())) {
+                result = true;
+                // get_net_ptr()->router_cycle.first--;
+            }
+            else if ((get_net_ptr()->router_cycle.first == 0) &&
+                (get_net_ptr()->router_cycle.second == curCycle())) {
+                result = false;
+            }
+            else if((uint64_t)get_net_ptr()->router_cycle.second != (uint64_t)curCycle())  {
+                // refill
+                result = true;
+                get_net_ptr()->router_cycle.first = get_net_ptr()->bufferless_routers;
+                get_net_ptr()->router_cycle.second = curCycle();
+
+            }
+        }
+
+        return result;
+   }
+
 
    // bool made_one_pkt_bufferless; // to track if one packet
                                 // is ejected from the network

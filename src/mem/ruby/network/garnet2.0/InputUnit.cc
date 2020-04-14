@@ -153,8 +153,10 @@ InputUnit::make_pkt_bufferless(int vnet) {
     if (m_router->m_network_ptr->m_seec == 1 ) { // if 'SEEC' is set true
         if (m_router->get_net_ptr()->m_num_bufferless_pkt >= 1) {
             // check if it is the turn of this router:
+            /*
             assert((m_router->curCycle() %
             (m_router->get_net_ptr()->getNumRouters()) == m_router->get_id()));
+            */
             if((m_router->num_bufferless_pkts < m_router->get_net_ptr()->m_num_bufferless_pkt)
                 /*m_router->made_one_pkt_bufferless == false &&
                 m_direction != "Local"*/) {
@@ -199,7 +201,7 @@ InputUnit::make_pkt_bufferless(int vnet) {
                 // update the
                 int latency = 2*hop_traversed; // assume: 1-cycle link and 1-cycle router
 
-                assert(latency >= 0);
+                assert(latency > 0);
                 // put the flit in the NI special buffer for it to be ejected using
                 // NI's consume_bufferless_pkt() API
 

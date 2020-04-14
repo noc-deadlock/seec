@@ -65,6 +65,12 @@ GarnetNetwork::GarnetNetwork(const Params *p)
     m_buffers_per_data_vc = p->buffers_per_data_vc;
     m_buffers_per_ctrl_vc = p->buffers_per_ctrl_vc;
     m_routing_algorithm = p->routing_algorithm;
+    // intialize the router-cycle pair here
+    router_cycle.first = p->bufferless_router;
+    bufferless_routers = p->bufferless_router;
+    router_cycle.second = Cycles(0);
+    // assert(router_cycle.first < p->routers.size());
+
 
     max_flit_latency = Cycles(0);
     max_flit_network_latency = Cycles(0);
@@ -115,6 +121,8 @@ GarnetNetwork::GarnetNetwork(const Params *p)
     cout << "m_one_pkt_bufferless: " << m_one_pkt_bufferless << endl;
     cout << "m_inj_single_vnet: " << m_inj_single_vnet << endl;
     cout << "m_num_bufferless_pkt: " << m_num_bufferless_pkt << endl;
+    cout << "router_cycle.first: " << router_cycle.first
+        << " router_cycle.second: " << router_cycle.second << endl;
     // assert(0);
 }
 

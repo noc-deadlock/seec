@@ -115,8 +115,10 @@ Router::wakeup()
     DPRINTF(RubyNetwork, "Router %d woke up\n", m_id);
 
     // make packet bufferless in this turn
+    bool my_turn = false;
     if (get_net_ptr()->m_seec == 1) {
-        if (curCycle() % get_net_ptr()->getNumRouters() == m_id) {
+        my_turn = myTurn();
+        if (my_turn) {
             // make here provision of either injecting in a single VNet or in multi-VNet
             if (get_net_ptr()->m_inj_single_vnet == 1) {
                 for (int inport = 0; inport < m_input_unit.size(); inport++) {
@@ -144,6 +146,11 @@ Router::wakeup()
                 }
                 DPRINTF(RubyNetwork, "num_bufferless_pkts: %d\n", num_bufferless_pkts);
                 DPRINTF(RubyNetwork, "m_bufferless_vnet_ptr: %d\n", m_bufferless_vnet_ptr);
+            }
+            if((num_bufferless_pkts) && (m_network_ptr->router_cycle.first != -1)) {
+                // If this router has made pkt(s) bufferless, then decrement
+                // the bufferless router number for that cycle
+                m_network_ptr->router_cycle.first--;
             }
         }
     }
@@ -175,7 +182,7 @@ Router::wakeup()
     // SEEC reset logic
     assert(num_bufferless_pkts <=  get_net_ptr()->m_num_bufferless_pkt);
     if (get_net_ptr()->m_seec == 1) {
-        if (curCycle() % get_net_ptr()->getNumRouters() == m_id) {
+        if (my_turn) {
 
             // reset the bufferless inport-ids for all the
             // inports that were made bufferless

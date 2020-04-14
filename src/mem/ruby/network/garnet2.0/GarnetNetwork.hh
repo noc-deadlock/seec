@@ -208,7 +208,8 @@ class GarnetNetwork : public Network
    uint32_t m_one_pkt_bufferless;
    uint32_t m_inj_single_vnet;
    uint32_t m_num_bufferless_pkt;
-
+   int bufferless_routers;
+   std::pair<int, Cycles> router_cycle;
 
    Cycles max_flit_latency;
    Cycles max_flit_network_latency;

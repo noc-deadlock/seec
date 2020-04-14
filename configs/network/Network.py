@@ -89,6 +89,11 @@ def define_options(parser):
                         type="int", default=0,
                         help="if set then number of router will make maximum that many pkts \
                         bufferless at a time")
+    parser.add_option("--bufferless-router", action="store",
+                        type="int", default=-1,
+                        help="This number represents maximum number of routers that can \
+                        make the packets bufferless in a single cycle")
+
 
 
 def create_network(options, ruby):
@@ -127,6 +132,7 @@ def init_network(options, network, InterfaceClass):
         network.one_pkt_bufferless = options.one_pkt_bufferless
         network.inj_single_vnet = options.inj_single_vnet
         network.num_bufferless_pkt = options.num_bufferless_pkt
+        network.bufferless_router = options.bufferless_router
 
 
     if options.network == "simple":
