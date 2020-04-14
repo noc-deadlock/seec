@@ -1,0 +1,24 @@
+command line: ./build/Garnet_standalone/gem5.opt configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=64 --num-dirs=64 --mesh-rows=8 --network=garnet2.0 --router-latency=1 --sim-cycles=1000 --inj-vnet=0 --vcs-per-vnet=2 --injectionrate=0.20 --synthetic=uniform_random --routing-algorithm=1
+=====
+./build/Garnet_standalone/gem5.opt configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=64 --num-dirs=64 --mesh-rows=8 --network=garnet2.0 --router-latency=1  --sim-cycles=1000 --inj-vnet=0 --vcs-per-vnet=1 --seec=1 --motivation-test=1 --injectionrate=1.0 --synthetic=uniform_random --routing-algorithm=1
+=====
+./build/Garnet_standalone/gem5.opt configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=64 --num-dirs=64 --mesh-rows=8 --network=garnet2.0 --router-latency=1 --sim-cycles=1000 --inj-vnet=0 --vcs-per-vnet=1 --seec=1 --motivation-test=1 --one-pkt-bufferless=1 --injectionrate=1.0 --synthetic=uniform_random --routing-algorithm=1
+=====
+ ./build/Garnet_standalone/gem5.debug configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=64 --num-dirs=64 --mesh-rows=8 --network=garnet2.0 --router-latency=1 --sim-cycles=1000 --inj-vnet=0 --vcs-per-vnet=1 --seec=1 --motivation-test=0 --one-pkt-bufferless=1 --injectionrate=1.0 --synthetic=uniform_random --routing-algorithm=3
+
+======= TEST command (SEEC) =========
+./build/Garnet_standalone/gem5.debug --debug-flags=RubyNetwork configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=16 --num-dirs=16 --mesh-rows=4 --network=garnet2.0 --router-latency=1 --sim-cycles=500 --inj-vnet=0 --vcs-per-vnet=1 --seec=0 --motivation-test=0 --one-pkt-bufferless=0 --inj-single-vnet=1 --num-packets-max=10 --injectionrate=1.0 --synthetic=uniform_random --routing-algorithm=1
+
+======= TEST command (Baseline) =========
+./build/Garnet_standalone/gem5.debug --debug-flags=RubyNetwork configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=16 --num-dirs=16 --mesh-rows=4 --network=garnet2.0 --router-latency=1 --sim-cycles=500 --inj-vnet=0 --vcs-per-vnet=1 --num-packets-max=10 --injectionrate=1.0 --synthetic=uniform_random --routing-algorithm=1
+
+./build/Garnet_standalone/gem5.debug --debug-flags=RubyNetwork configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=16 --num-dirs=16 --mesh-rows=4 --network=garnet2.0 --router-latency=1 --sim-cycles=500 --inj-vnet=0 --vcs-per-vnet=1 --num-packets-max=50 --injectionrate=1.0 --synthetic=uniform_random --routing-algorithm=1
+
+===========Test command (SEEC)==================
+./build/Garnet_standalone/gem5.debug --debug-flags=RubyNetwork configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=16 --num-dirs=16 --mesh-rows=4 --network=garnet2.0 --router-latency=1 --sim-cycles=1000 --inj-vnet=0 --vcs-per-vnet=1 --num-packets-max=1 --single-sender-id=0 --single-dest-id=15 --seec=1 --one-pkt-bufferless=1 --injectionrate=1.0 --synthetic=uniform_random --routing-algorithm=1
+
+============  SEEC -- NEW COMMNAD  ==============
+./build/Garnet_standalone/gem5.debug configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=16 --num-dirs=16 --mesh-rows=4 --network=garnet2.0 --router-latency=1 --sim-cycles=600 --inj-vnet=0 --vcs-per-vnet=1 --num-packets-max=50 --seec=1 --one-pkt-bufferless=1 --num-bufferless-pkt=2 --injectionrate=1.0 --synthetic=uniform_random --routing-algorithm=2
+
+============ multi-SEEC commandline =============
+./build/Garnet_standalone/gem5.debug configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus=16 --num-dirs=16 --mesh-rows=4 --network=garnet2.0 --router-latency=1 --sim-cycles=10000 --inj-vnet=0 --vcs-per-vnet=1 --seec=1 --one-pkt-bufferless=1 --num-bufferless-pkt=1 --bufferless-router=4 --injectionrate=1.00 --synthetic=uniform_random --routing-algorithm=2
