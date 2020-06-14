@@ -156,18 +156,44 @@ class GarnetNetwork : public Network
     }
 
     void increment_injected_packets(int vnet) { m_packets_injected[vnet]++; }
-    void increment_received_packets(int vnet) { m_packets_received[vnet]++; }
-
-    void
-    increment_packet_network_latency(Cycles latency, int vnet)
-    {
-        m_packet_network_latency[vnet] += latency;
+    void increment_received_packets(int vnet, bool bufferless = false) {
+        m_packets_received[vnet]++;
+        if(bufferless) {
+            m_bufferless_packets_received[vnet]++;
+        }
+        else {
+            m_normal_packets_received[vnet]++;
+        }
     }
 
     void
-    increment_packet_queueing_latency(Cycles latency, int vnet)
+    increment_packet_network_latency(Cycles latency, int vnet,
+                                                    bool bufferless = false)
+    {
+        m_packet_network_latency[vnet] += latency;
+        if(bufferless) {
+            // increment bufferless packet latency
+            m_bufferless_packet_network_latency[vnet] += latency;
+        }
+        else {
+            // increment normal packet latency
+            m_normal_packet_network_latency[vnet] += latency;
+        }
+    }
+
+    void
+    increment_packet_queueing_latency(Cycles latency, int vnet,
+                                                    bool bufferless = false)
     {
         m_packet_queueing_latency[vnet] += latency;
+        if(bufferless) {
+            // increment bufferless packet latency
+            m_bufferless_packet_queueing_latency[vnet] += latency;
+        }
+        else {
+            // increment normal packet latency
+            m_normal_packet_queueing_latency[vnet] += latency;
+        }
     }
 
     void increment_injected_flits(int vnet) { m_flits_injected[vnet]++; }
@@ -236,6 +262,9 @@ class GarnetNetwork : public Network
 
    // SEEC related Stats:
    Stats::Scalar m_bufferless_pkts;
+   // this is per VNet
+   Stats::Vector m_bufferless_packets_received;
+   Stats::Vector m_normal_packets_received;
 
    std::vector<NetworkInterface *> m_nis;   // All NI's in Network
 
@@ -256,11 +285,33 @@ class GarnetNetwork : public Network
     Stats::Vector m_packet_network_latency;
     Stats::Vector m_packet_queueing_latency;
 
+
+    Stats::Vector m_bufferless_packet_network_latency;
+    Stats::Vector m_bufferless_packet_queueing_latency;
+
+    Stats::Vector m_normal_packet_network_latency;
+    Stats::Vector m_normal_packet_queueing_latency;
+
     Stats::Formula m_avg_packet_vnet_latency;
     Stats::Formula m_avg_packet_vqueue_latency;
     Stats::Formula m_avg_packet_network_latency;
     Stats::Formula m_avg_packet_queueing_latency;
     Stats::Formula m_avg_packet_latency;
+
+    // bufferless
+    Stats::Formula m_avg_bufferless_packet_vnet_latency;
+    Stats::Formula m_avg_bufferless_packet_vqueue_latency;
+    Stats::Formula m_avg_bufferless_packet_network_latency;
+    Stats::Formula m_avg_bufferless_packet_queueing_latency;
+    Stats::Formula m_avg_bufferless_packet_latency;
+
+    // normal
+    Stats::Formula m_avg_normal_packet_vnet_latency;
+    Stats::Formula m_avg_normal_packet_vqueue_latency;
+    Stats::Formula m_avg_normal_packet_network_latency;
+    Stats::Formula m_avg_normal_packet_queueing_latency;
+    Stats::Formula m_avg_normal_packet_latency;
+
 
     Stats::Vector m_flits_received;
     Stats::Vector m_flits_injected;

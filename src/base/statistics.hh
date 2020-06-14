@@ -3347,6 +3347,13 @@ sum(Temp val)
     return Temp(std::make_shared<SumNode<std::plus<Result> > >(val));
 }
 
+/*
+Temp&
+operator uint64_t() {
+    return *node;
+}
+*/
+
 /** Dump all statistics data to the registered outputs */
 void dump();
 void reset();

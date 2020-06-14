@@ -343,6 +343,20 @@ GarnetNetwork::regStats()
         .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
         ;
 
+    // Bufferless Packet
+    m_bufferless_packets_received
+        .init(m_virtual_networks)
+        .name(name() + ".bufferless_packets_received")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
+    // Normal Packet
+    m_normal_packets_received
+        .init(m_virtual_networks)
+        .name(name() + ".normal_packets_received")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
 
     m_bufferless_pkts
         .name(name() + ".total_bufferless_packets")
@@ -412,11 +426,41 @@ GarnetNetwork::regStats()
         .flags(Stats::oneline)
         ;
 
+    m_bufferless_packet_network_latency
+        .init(m_virtual_networks)
+        .name(name() + ".bufferless_packet_network_latency")
+        .flags(Stats::oneline)
+        ;
+
+    m_bufferless_packet_queueing_latency
+        .init(m_virtual_networks)
+        .name(name() + ".bufferless_packet_queueing_latency")
+        .flags(Stats::oneline)
+        ;
+
+    m_normal_packet_network_latency
+        .init(m_virtual_networks)
+        .name(name() + ".normal_packet_network_latency")
+        .flags(Stats::oneline)
+        ;
+
+    m_normal_packet_queueing_latency
+        .init(m_virtual_networks)
+        .name(name() + ".normal_packet_queueing_latency")
+        .flags(Stats::oneline)
+        ;
+
     for (int i = 0; i < m_virtual_networks; i++) {
         m_packets_received.subname(i, csprintf("vnet-%i", i));
         m_packets_injected.subname(i, csprintf("vnet-%i", i));
         m_packet_network_latency.subname(i, csprintf("vnet-%i", i));
         m_packet_queueing_latency.subname(i, csprintf("vnet-%i", i));
+        // bufferless
+        m_bufferless_packet_network_latency.subname(i, csprintf("vnet-%i", i));
+        m_bufferless_packet_queueing_latency.subname(i, csprintf("vnet-%i", i));
+        // normal
+        m_normal_packet_network_latency.subname(i, csprintf("vnet-%i", i));
+        m_normal_packet_queueing_latency.subname(i, csprintf("vnet-%i", i));
     }
 
     m_avg_packet_vnet_latency
@@ -445,6 +489,64 @@ GarnetNetwork::regStats()
         .name(name() + ".average_packet_latency");
     m_avg_packet_latency
         = m_avg_packet_network_latency + m_avg_packet_queueing_latency;
+
+    /******************bufferless************************/
+    m_avg_bufferless_packet_vnet_latency
+        .name(name() + ".average_bufferless_packet_vnet_latency")
+        .flags(Stats::oneline);
+    m_avg_bufferless_packet_vnet_latency =
+        m_bufferless_packet_network_latency / m_bufferless_packets_received;
+
+    m_avg_bufferless_packet_vqueue_latency
+        .name(name() + ".average_bufferless_packet_vqueue_latency")
+        .flags(Stats::oneline);
+    m_avg_bufferless_packet_vqueue_latency =
+        m_bufferless_packet_queueing_latency / m_bufferless_packets_received;
+
+    m_avg_bufferless_packet_network_latency
+        .name(name() + ".average_bufferless_packet_network_latency");
+    m_avg_bufferless_packet_network_latency =
+        sum(m_bufferless_packet_network_latency) / sum(m_bufferless_packets_received);
+
+    m_avg_bufferless_packet_queueing_latency
+        .name(name() + ".average_bufferless_packet_queueing_latency");
+    m_avg_bufferless_packet_queueing_latency
+        = sum(m_bufferless_packet_queueing_latency) / sum(m_bufferless_packets_received);
+
+    m_avg_bufferless_packet_latency
+        .name(name() + ".average_bufferless_packet_latency");
+    m_avg_bufferless_packet_latency
+        = m_avg_bufferless_packet_network_latency + m_avg_bufferless_packet_queueing_latency;
+
+    /******************Normal************************/
+    // assert(!(sum(m_bufferless_packets_received) + sum(m_normal_packets_received) - sum(m_packets_received));
+    m_avg_normal_packet_vnet_latency
+        .name(name() + ".average_normal_packet_vnet_latency")
+        .flags(Stats::oneline);
+    m_avg_normal_packet_vnet_latency =
+        m_normal_packet_network_latency / (m_normal_packets_received);
+
+    m_avg_normal_packet_vqueue_latency
+        .name(name() + ".average_normal_packet_vqueue_latency")
+        .flags(Stats::oneline);
+    m_avg_normal_packet_vqueue_latency =
+        m_normal_packet_queueing_latency / m_normal_packets_received;
+
+    m_avg_normal_packet_network_latency
+        .name(name() + ".average_normal_packet_network_latency");
+    m_avg_normal_packet_network_latency =
+        sum(m_normal_packet_network_latency) / (sum(m_normal_packets_received));
+
+    m_avg_normal_packet_queueing_latency
+        .name(name() + ".average_normal_packet_queueing_latency");
+    m_avg_normal_packet_queueing_latency
+        = sum(m_normal_packet_queueing_latency) / (sum(m_normal_packets_received));
+
+    m_avg_normal_packet_latency
+        .name(name() + ".average_normal_packet_latency");
+    m_avg_normal_packet_latency
+        = m_avg_normal_packet_network_latency + m_avg_normal_packet_queueing_latency;
+
 
     // Flits
     m_flits_received

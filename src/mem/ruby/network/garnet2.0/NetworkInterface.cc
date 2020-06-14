@@ -142,7 +142,7 @@ NetworkInterface::dequeueCallback()
 }
 
 void
-NetworkInterface::incrementStats(flit *t_flit)
+NetworkInterface::incrementStats(flit *t_flit, bool bufferless)
 {
     int vnet = t_flit->get_vnet();
 
@@ -168,9 +168,9 @@ NetworkInterface::incrementStats(flit *t_flit)
     m_net_ptr->update_network_latency_histogram(network_delay);
 
     if (t_flit->get_type() == TAIL_ || t_flit->get_type() == HEAD_TAIL_) {
-        m_net_ptr->increment_received_packets(vnet);
-        m_net_ptr->increment_packet_network_latency(network_delay, vnet);
-        m_net_ptr->increment_packet_queueing_latency(queueing_delay, vnet);
+        m_net_ptr->increment_received_packets(vnet, bufferless);
+        m_net_ptr->increment_packet_network_latency(network_delay, vnet, bufferless);
+        m_net_ptr->increment_packet_queueing_latency(queueing_delay, vnet, bufferless);
     }
 
     // Hops
@@ -299,7 +299,8 @@ NetworkInterface::consume_bufferless_pkt(int latency) {
     // remove flit
     flit *t_flit = m_bufferless_pkt->getTopFlit();
     assert(m_bufferless_pkt->isEmpty() == true);
-    int vnet = t_flit->get_vnet();
+    int vnet = t_flit->get_vnet(); // flit contains the vnet information
+
     t_flit->set_dequeue_time(curCycle() + Cycles(latency));
 
     // If a tail flit is received, enqueue into the protocol buffers if
@@ -316,7 +317,11 @@ NetworkInterface::consume_bufferless_pkt(int latency) {
             // sendCredit(t_flit, true);
 
             // Update stats and delete flit pointer
-            incrementStats(t_flit);
+            // Update here the flag to be sent to
+            // incrementStats() to update the latency
+            // for bufferless_pkts
+            // NOTE: considering only single flit packet
+            incrementStats(t_flit, true/*bufferless(FF)*/);
             m_net_ptr->m_bufferless_pkts++;
             delete t_flit;
         } else {

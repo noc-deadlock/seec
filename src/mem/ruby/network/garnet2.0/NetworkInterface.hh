@@ -118,7 +118,7 @@ class NetworkInterface : public ClockedObject, public Consumer
     void checkReschedule();
     void sendCredit(flit *t_flit, bool is_free);
 
-    void incrementStats(flit *t_flit);
+    void incrementStats(flit *t_flit, bool bufferless=false);
 };
 
 #endif // __MEM_RUBY_NETWORK_GARNET2_0_NETWORKINTERFACE_HH__
