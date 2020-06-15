@@ -301,6 +301,10 @@ NetworkInterface::consume_bufferless_pkt(int latency) {
     assert(m_bufferless_pkt->isEmpty() == true);
     int vnet = t_flit->get_vnet(); // flit contains the vnet information
 
+    // latency of packets before they become bufferless
+    m_net_ptr->m_total_bufferless_pkt_normal_latency +=
+                uint64_t(curCycle() - t_flit->get_enqueue_time());
+
     t_flit->set_dequeue_time(curCycle() + Cycles(latency));
 
     // If a tail flit is received, enqueue into the protocol buffers if
@@ -323,6 +327,7 @@ NetworkInterface::consume_bufferless_pkt(int latency) {
             // NOTE: considering only single flit packet
             incrementStats(t_flit, true/*bufferless(FF)*/);
             m_net_ptr->m_bufferless_pkts++;
+            m_net_ptr->m_total_bufferless_latency += latency;
             delete t_flit;
         } else {
                assert(0); // should not come here

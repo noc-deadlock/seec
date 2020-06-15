@@ -236,6 +236,8 @@ class GarnetNetwork : public Network
    uint32_t m_num_bufferless_pkt;
    int bufferless_routers;
    std::pair<int, Cycles> router_cycle;
+   Stats::Scalar m_total_bufferless_latency;
+   Stats::Scalar m_total_bufferless_pkt_normal_latency;
 
    Cycles max_flit_latency;
    Cycles max_flit_network_latency;
@@ -304,6 +306,9 @@ class GarnetNetwork : public Network
     Stats::Formula m_avg_bufferless_packet_network_latency;
     Stats::Formula m_avg_bufferless_packet_queueing_latency;
     Stats::Formula m_avg_bufferless_packet_latency;
+    Stats::Formula m_avg_bufferless_network_latency; // this is the latency
+                                                    // of packet in FF state
+    Stats::Formula m_avg_bufferless_normal_network_latency;
 
     // normal
     Stats::Formula m_avg_normal_packet_vnet_latency;

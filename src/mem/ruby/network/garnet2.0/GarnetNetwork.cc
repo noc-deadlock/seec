@@ -79,6 +79,8 @@ GarnetNetwork::GarnetNetwork(const Params *p)
     min_flit_latency = Cycles(999999); // 1 million
     min_flit_network_latency = Cycles(999999);
     min_flit_queueing_latency = Cycles(999999);
+//    m_total_bufferless_latency = 0;
+//    m_total_bufferless_pkt_normal_latency = 0;
 
 
     m_enable_fault_model = p->enable_fault_model;
@@ -363,6 +365,16 @@ GarnetNetwork::regStats()
         .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
         ;
 
+    m_total_bufferless_latency
+        .name(name() + ".total_bufferless_latency")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
+    m_total_bufferless_pkt_normal_latency
+        .name(name() + ".total_bufferless_pkt_normal_latency")
+        .flags(Stats::pdf | Stats::total | Stats::nozero | Stats::oneline)
+        ;
+
     m_flt_dist
         .init(m_routers.size())
         .name(name() + ".flit_distribution")
@@ -579,6 +591,15 @@ GarnetNetwork::regStats()
         m_flit_network_latency.subname(i, csprintf("vnet-%i", i));
         m_flit_queueing_latency.subname(i, csprintf("vnet-%i", i));
     }
+
+    m_avg_bufferless_network_latency
+        .name(name() + ".average_bufferless_network_latency");
+    m_avg_bufferless_network_latency = sum(m_total_bufferless_latency) / sum(m_bufferless_packets_received);
+
+    m_avg_bufferless_normal_network_latency
+        .name(name() + ".average_bufferless_normal_network_latency");
+    m_avg_bufferless_normal_network_latency = sum(m_total_bufferless_pkt_normal_latency) / sum(m_bufferless_packets_received);
+
 
     m_avg_flit_vnet_latency
         .name(name() + ".average_flit_vnet_latency")
