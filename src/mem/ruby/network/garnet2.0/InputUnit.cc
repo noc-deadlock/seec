@@ -193,6 +193,8 @@ InputUnit::make_pkt_bufferless(int vnet) {
                 int y_hops = abs(dest_y - my_y);
 
                 hop_traversed = x_hops + y_hops;
+                // update the STAT for FF hops here
+                m_router->m_network_ptr->m_total_ff_hops += hop_traversed;
 
                 if (my_router_id == dest_router_id) {
                     hop_traversed = 1;

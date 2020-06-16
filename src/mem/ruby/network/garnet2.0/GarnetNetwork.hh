@@ -264,6 +264,8 @@ class GarnetNetwork : public Network
 
    // SEEC related Stats:
    Stats::Scalar m_bufferless_pkts;
+   Stats::Scalar m_total_ff_hops;
+   // Stats::Scalar m_total_normal_hops;
    // this is per VNet
    Stats::Vector m_bufferless_packets_received;
    Stats::Vector m_normal_packets_received;
