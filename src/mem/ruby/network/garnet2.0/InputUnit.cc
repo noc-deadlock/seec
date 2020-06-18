@@ -201,7 +201,7 @@ InputUnit::make_pkt_bufferless(int vnet) {
                 }
                 t_flit->m_route.hops_traversed += hop_traversed;
                 // update the
-                int latency = 2*hop_traversed; // assume: 1-cycle link and 1-cycle router
+                int latency = 2*hop_traversed + 1; // assume: 1-cycle link and 1-cycle router
 
                 assert(latency > 0);
                 // put the flit in the NI special buffer for it to be ejected using
