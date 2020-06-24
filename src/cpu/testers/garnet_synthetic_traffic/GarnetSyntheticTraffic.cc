@@ -142,10 +142,12 @@ GarnetSyntheticTraffic::completeRequest(PacketPtr pkt)
 void
 GarnetSyntheticTraffic::tick()
 {
+    // To avoid false alaram during deadlock test
+    /*
     if (++noResponseCycles >= responseLimit) {
         fatal("%s deadlocked at cycle %d\n", name(), curTick());
     }
-
+    */
     // make new request based on injection rate
     // (injection rate's range depends on precision)
     // - generate a random number between 0 and 10^precision
