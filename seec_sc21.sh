@@ -5,11 +5,11 @@
 # bench_caps=( 'BIT_COMPLEMENT' 'BIT_ROTATION' 'SHUFFLE' 'TRANSPOSE' 'UNIFORM_RANDOM' )
 # bench=( 'bit_complement' 'bit_rotation' 'shuffle' 'transpose' 'uniform_random' )
 
-# bench_caps=( 'BIT_ROTATION' 'SHUFFLE' 'TRANSPOSE' 'UNIFORM_RANDOM')
-# bench=( 'bit_rotation' 'shuffle' 'transpose' 'uniform_random')
+bench_caps=( 'BIT_ROTATION' 'SHUFFLE' 'TRANSPOSE' 'UNIFORM_RANDOM')
+bench=( 'bit_rotation' 'shuffle' 'transpose' 'uniform_random')
 
-bench_caps=( 'UNIFORM_RANDOM' 'BIT_COMPLEMENT' 'BIT_ROTATION' 'TRANSPOSE' 'SHUFFLE' )
-bench=( 'uniform_random' 'bit_complement' 'bit_rotation' 'transpose' 'shuffle' )
+# bench_caps=( 'UNIFORM_RANDOM' 'BIT_COMPLEMENT' 'BIT_ROTATION' 'TRANSPOSE' 'SHUFFLE' )
+# bench=( 'uniform_random' 'bit_complement' 'bit_rotation' 'transpose' 'shuffle' )
 
 routing_algorithm=( 'TABLE' 'XY' 'RANDOM' 'ADAPT_RAND' 'WestFirst' 'ESCAPE_VC' )
 
