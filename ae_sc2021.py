@@ -7,11 +7,11 @@ binary = 'build/Garnet_standalone/gem5.opt'
 os.system("scons -j15 {}".format(binary))
 
 
-# bench_caps=[ "BIT_ROTATION", "SHUFFLE", "TRANSPOSE" ]
-# bench=[ "bit_rotation", "shuffle", "transpose" ]
+bench_caps=[ "BIT_ROTATION", "SHUFFLE", "TRANSPOSE" ]
+bench=[ "bit_rotation", "shuffle", "transpose" ]
 
-bench_caps=[ "BIT_ROTATION" ]
-bench=[ "bit_rotation" ]
+# bench_caps=[ "BIT_ROTATION" ]
+# bench=[ "bit_rotation" ]
 
 routing_algorithm=[ 'TABLE', 'XY', 'RANDOM', 'ADAPT_RAND', 'WestFirst', 'ESCAPE_VC' ]
 
@@ -35,9 +35,7 @@ def bufferless_router(m_, core_count):
 	else:
 		assert(0)
 
-# os.system("echo {0:s}".format(print_mode(1)))
-
-cycles = 1000
+cycles = 10000
 vnet = 0
 tr = 1
 vc_ = 4
