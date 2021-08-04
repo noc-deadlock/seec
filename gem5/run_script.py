@@ -35,7 +35,7 @@ def bufferless_router(m_, core_count):
 	else:
 		assert(0)
 
-cycles = 10000
+cycles = 100000
 vnet = 0
 tr = 1
 vc_ = 4
