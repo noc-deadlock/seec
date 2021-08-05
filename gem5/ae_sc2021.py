@@ -59,7 +59,7 @@ for m in range(len(mode)):
 
 				print ("output_dir: %s" %(output_dir))
 
-				packet_latency = subprocess.check_output("grep -nri average_flit_latency  {0:s}  | sed 's/.*system.ruby.network.average_flit_latency\s*//'".format(output_dir), shell=True)
+				packet_latency = subprocess.check_output("grep -nri average_packet_latency  {0:s}  | sed 's/.*system.ruby.network.average_packet_latency\s*//'".format(output_dir), shell=True)
 
 				pkt_lat = float(packet_latency)
 				print ("injection_rate={1:1.2f} \t Packet Latency: {0:f} ".format(pkt_lat, injection_rate))
@@ -80,7 +80,7 @@ for m in range(len(mode)):
 				output_dir=("{0:s}/{1:d}/{2:s}/{4:s}/{3:s}/vc-{5:d}/inj-{6:1.2f}".format(out_dir, num_cores[c],  mode[m], bench_caps[b], routing_algorithm[rout_], vc_, injection_rate))
 
 				if(os.path.exists(output_dir)):
-					packet_latency = subprocess.check_output("grep -nri average_flit_latency  {0:s}  | sed 's/.*system.ruby.network.average_flit_latency\s*//'".format(output_dir), shell=True)
+					packet_latency = subprocess.check_output("grep -nri average_packet_latency  {0:s}  | sed 's/.*system.ruby.network.average_packet_latency\s*//'".format(output_dir), shell=True)
 					pkt_lat = float(packet_latency)
 					print ("injection_rate={1:1.2f} \t Packet Latency: {0:f} ".format(pkt_lat, injection_rate))
 					injection_rate+=0.02
