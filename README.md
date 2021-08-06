@@ -11,7 +11,7 @@ The International Conference for High Performance Computing, Networking, Storage
 
 ### How to build ###
 Under gem5/
-* scons -j15 scons/Garnet_standalone/gem5.opt
+* scons -j 15 build/Garnet_standalone/gem5.opt
 
 ### How to run ###
 * See gem5/run_script.py
