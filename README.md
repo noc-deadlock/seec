@@ -17,7 +17,7 @@ Under gem5/
 * See gem5/run_script.py
 * To run: python run_script.py
 * A handy (approx.) script for saturation throughtput gem5/sat_thrpt.py
-* To run: python sat_thrpt.py
+* To run: python sat_thrpt.py (takes time, just like all other things)
  
 ### Developer ###
 * Mayank Parasar (mayankparasar@gmail.com)
