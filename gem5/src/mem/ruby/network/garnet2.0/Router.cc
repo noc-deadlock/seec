@@ -88,7 +88,7 @@ Router::init()
     for(int ii=0; ii < m_input_unit.size(); ii++) {
         bufferless_inport_id.push_back(-1); // inport id from where packet was made bufferless
     }
-    cout << "bufferless_inport_id.size() : " << bufferless_inport_id.size() << endl;
+    // cout << "bufferless_inport_id.size() : " << bufferless_inport_id.size() << endl;
     assert (bufferless_inport_id.size() == m_input_unit.size());
 }
 
