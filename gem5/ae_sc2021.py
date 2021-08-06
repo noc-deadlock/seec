@@ -49,7 +49,7 @@ for m in range(len(mode)):
 			while (pkt_lat < 200.00):
 				############ gem5 command-line ###########
 
-				os.system("{0:s} -d {1:s}/{2:d}/{3:s}/{5:s}/{4:s}/vc-{6:d}/inj-{7:1.2f} configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus={2:d} --num-dirs={2:d} --mesh-row={8:d} --inj-vnet={9:d} --network=garnet2.0 --router-latency=1 --sim-cycles={10:d} --seec=1 --one-pkt-bufferless=1 --num-bufferless-pkt=1 --bufferless-router={11:d} --injectionrate={7:1.2f} --synthetic={12:s} --routing-algorithm={13:d} ".format(binary, out_dir, num_cores[c],  mode[m], bench_caps[b], routing_algorithm[rout_], vc_, injection_rate, num_rows[c], vnet, cycles, int(bufferless_router(m, num_cores[c])), bench[b], rout_))
+				os.system("{0:s} -d {1:s}/{2:d}/{3:s}/{5:s}/{4:s}/vc-{6:d}/inj-{7:1.2f} configs/example/garnet_synth_traffic.py --topology=Mesh_XY --num-cpus={2:d} --num-dirs={2:d} --mesh-row={8:d} --vcs-per-vnet={6:d} --inj-vnet={9:d} --network=garnet2.0 --router-latency=1 --sim-cycles={10:d} --seec=1 --one-pkt-bufferless=1 --num-bufferless-pkt=1 --bufferless-router={11:d} --injectionrate={7:1.2f} --synthetic={12:s} --routing-algorithm={13:d} ".format(binary, out_dir, num_cores[c],  mode[m], bench_caps[b], routing_algorithm[rout_], vc_, injection_rate, num_rows[c], vnet, cycles, int(bufferless_router(m, num_cores[c])), bench[b], rout_))
 
 				#### convert flot to string with required precision ####
 				inj_rate="{:1.2f}".format(injection_rate)
